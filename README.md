@@ -10,4 +10,4 @@ Dit is de website van bistro likert, een restaurant gelegen in Liedekerke, Belgi
 * De suggestie van de week moet duidelijk zichtbaar zijn voor de klanten
 * De eignaar moet gebruiksvriendelijk de suggestie kunnen posten eventueel met een foto
 
-#Idee
+## Idee
