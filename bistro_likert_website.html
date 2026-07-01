@@ -1,0 +1,485 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--A:#b8860b;--AL:#fdf3e0;--ADK:#7a5a00;--DARK:#1a0e00;--DARKM:#2a1a08}
+body{font-family:var(--font-sans);background:var(--surface-0);color:var(--text-primary)}
+input,textarea,select{font-family:inherit}
+button{font-family:inherit;cursor:pointer}
+</style>
+
+<h2 class="sr-only">Bistro Likert — restaurant website demo met beheerpaneel</h2>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>
+const {useState,useEffect,useRef} = React;
+const A='#b8860b',AL='#fdf8ed',DARK='#1a0e00',DARKM='#2d1c08';
+const PASS='bistro2024';
+const SK={menu:'bl-menu-v2',special:'bl-special-v2',gallery:'bl-gallery-v2'};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const eur=p=>`€\u00a0${Number(p).toFixed(2).replace('.',',')}`;
+
+async function sGet(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null}catch{return null}}
+async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch(e){console.error(e)}}
+function toB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+
+const DEF_MENU=[
+  {id:'c1',category:'Voorgerechten',items:[
+    {id:'i1',name:'Soep van de dag',description:'Dagelijks wisselend, vers bereid met seizoensgroenten',price:7.5},
+    {id:'i2',name:'Garnaalkroketten (4 stuks)',description:'Huisgemaakt, geserveerd met tomatensaus',price:13.5},
+    {id:'i3',name:'Carpaccio van rundvlees',description:'Met rucola, parmezaan en truffelolie',price:12.5},
+  ]},
+  {id:'c2',category:'Hoofdgerechten',items:[
+    {id:'i4',name:'Bistrosteak',description:'Met frietjes, seizoensgroenten en saus naar keuze',price:24.5},
+    {id:'i5',name:'Gegrilde zeebaars',description:'Op spinazie met aardappelgratin en kruidenboter',price:22.0},
+    {id:'i6',name:'Pasta van de chef',description:'Wisselend dagreceptrecept — vraag ons personeel',price:16.5},
+    {id:'i7',name:'Vegetarische suggestie',description:'Vraag naar ons huidig vegetarisch aanbod',price:15.0},
+  ]},
+  {id:'c3',category:'Desserts',items:[
+    {id:'i8',name:'Dame blanche',description:'Vanille-ijs met warme huisgemaakte chocoladesaus',price:7.5},
+    {id:'i9',name:'Crème brûlée',description:'Klassiek recept met echte vanille',price:8.0},
+    {id:'i10',name:'Kaasplank',description:'Selectie Belgische kazen met huisgemaakte confituur',price:9.5},
+  ]},
+  {id:'c4',category:'Dranken',items:[
+    {id:'i11',name:'Belgisch bier',description:'Vraag naar ons tap- en flessenbieraanbod',price:3.5},
+    {id:'i12',name:'Huiswijn (glas)',description:'Rood, wit of rosé',price:5.5},
+    {id:'i13',name:'Frisdrank',description:'Cola, Fanta, Sprite, Spa, Tönissteiner',price:3.5},
+    {id:'i14',name:'Koffie & thee',description:'Espresso, cappuccino, latte, kruidenthee',price:3.0},
+  ]},
+];
+const DEF_SPECIAL={title:'Gegrilde zalm met citroensaus',description:'Verse Noorse zalm op de plancha, geserveerd met een romige citroensaus, geroosterde seizoensgroenten en huisbereide aardappelgratin.',price:19.5,photo:null};
+
+// ─── Styles ──────────────────────────────────────────────────────────────────
+const S={
+  nav:{background:DARK,borderBottom:'1px solid rgba(255,255,255,0.07)',position:'relative',zIndex:10},
+  navIn:{maxWidth:960,margin:'0 auto',display:'flex',alignItems:'center',padding:'0 1.25rem',height:56},
+  logo:{fontFamily:'Georgia,serif',color:'#f5e6c8',fontSize:21,fontWeight:400,flex:1,cursor:'pointer',userSelect:'none'},
+  navLinks:{display:'flex',gap:2,flexWrap:'wrap'},
+  nb:(a)=>({background:'none',border:'none',color:a?'#f5e6c8':'#9a8070',padding:'6px 10px',borderRadius:6,fontSize:13,fontWeight:a?500:400,borderBottom:a?`2px solid ${A}`:'2px solid transparent',transition:'color 0.15s'}),
+  main:{maxWidth:960,margin:'0 auto',padding:'2rem 1.25rem'},
+  hero:{background:DARK,borderRadius:16,padding:'2.5rem 2rem',marginBottom:'2.5rem',textAlign:'center'},
+  heroLabel:{color:A,fontSize:12,letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:'0.75rem'},
+  heroTitle:{fontFamily:'Georgia,serif',color:'#f5e6c8',fontSize:40,fontWeight:400,lineHeight:1.2,margin:'0 0 1rem'},
+  heroPara:{color:'#9a8070',fontSize:15,lineHeight:1.65,margin:'0 0 2rem'},
+  specialBox:{background:DARK,borderRadius:14,padding:'2rem',border:`2px solid ${A}`,marginBottom:'2.5rem'},
+  specialBadge:{display:'inline-block',background:A,color:DARK,fontSize:11,fontWeight:500,padding:'3px 10px',borderRadius:4,letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'0.9rem'},
+  specialTitle:{fontFamily:'Georgia,serif',color:'#f5e6c8',fontSize:24,fontWeight:400,margin:'0 0 0.6rem'},
+  specialDesc:{color:'#b8a090',fontSize:14,lineHeight:1.65,margin:'0 0 0.9rem'},
+  specialPrice:{color:A,fontSize:20,fontWeight:500},
+  catTitle:{fontSize:12,fontWeight:500,color:A,letterSpacing:'0.08em',textTransform:'uppercase',borderBottom:`1px solid ${AL}`,paddingBottom:'0.5rem',marginBottom:'1rem'},
+  menuRow:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'0.65rem 0',borderBottom:'0.5px solid var(--border)'},
+  menuPrice:{color:A,fontWeight:500,whiteSpace:'nowrap',marginLeft:14,fontSize:14,flexShrink:0},
+  card:{background:'var(--surface-2)',border:'0.5px solid var(--border)',borderRadius:12,padding:'1.25rem',marginBottom:'1rem'},
+  grid:{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))',gap:10},
+  photo:{width:'100%',aspectRatio:'4/3',objectFit:'cover',borderRadius:8,display:'block'},
+  inp:{width:'100%',padding:'7px 11px',borderRadius:7,border:'0.5px solid var(--border-strong)',background:'var(--surface-1)',color:'var(--text-primary)',fontSize:14},
+  ta:{width:'100%',padding:'7px 11px',borderRadius:7,border:'0.5px solid var(--border-strong)',background:'var(--surface-1)',color:'var(--text-primary)',fontSize:14,resize:'vertical',minHeight:70},
+  lbl:{fontSize:12,fontWeight:500,color:'var(--text-secondary)',display:'block',marginBottom:5},
+  btn:(v='d')=>({padding:'7px 16px',borderRadius:7,fontSize:13,fontWeight:500,border:v==='p'?'none':v==='d2'?`0.5px solid #c0392b`:'0.5px solid var(--border-strong)',background:v==='p'?A:v==='d2'?'#c0392b':v==='g'?'none':'var(--surface-1)',color:v==='p'?DARK:v==='d2'?'#fff':'var(--text-primary)',cursor:'pointer'}),
+  sb:{background:'var(--surface-1)',border:'0.5px solid var(--border)',borderRadius:12,padding:'0.75rem',flexShrink:0,width:190},
+  sbBtn:(a)=>({display:'flex',alignItems:'center',gap:8,width:'100%',textAlign:'left',background:a?AL:'none',border:'none',color:a?'#7a5a00':'var(--text-secondary)',padding:'8px 10px',borderRadius:7,cursor:'pointer',fontSize:13,marginBottom:3,fontWeight:a?500:400}),
+  row:{display:'flex',gap:10,alignItems:'center',marginBottom:8},
+  tag:{fontSize:11,background:AL,color:'#7a5a00',padding:'2px 8px',borderRadius:4,fontWeight:500,display:'inline-block'},
+  footer:{background:DARK,color:'#6b5c4a',textAlign:'center',padding:'1.5rem',marginTop:'4rem',fontSize:13},
+};
+
+// ─── App ──────────────────────────────────────────────────────────────────────
+function App(){
+  const [view,setView]=useState('home');
+  const [adv,setAdv]=useState('special');
+  const [isAdmin,setIsAdmin]=useState(false);
+  const [loading,setLoading]=useState(true);
+  const [menu,setMenu]=useState(DEF_MENU);
+  const [special,setSpecial]=useState(DEF_SPECIAL);
+  const [gallery,setGallery]=useState([]);
+
+  useEffect(()=>{
+    (async()=>{
+      const m=await sGet(SK.menu),s=await sGet(SK.special),g=await sGet(SK.gallery);
+      if(m)setMenu(m);if(s)setSpecial(s);if(g)setGallery(g);
+      setLoading(false);
+    })();
+  },[]);
+
+  const upMenu=async v=>{setMenu(v);await sSet(SK.menu,v)};
+  const upSpecial=async v=>{setSpecial(v);await sSet(SK.special,v)};
+  const upGallery=async v=>{setGallery(v);await sSet(SK.gallery,v)};
+  const go=v=>{setView(v)};
+
+  if(loading)return React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',height:300,color:'var(--text-muted)'}},'Laden…');
+
+  const navItems=[['home','Home'],['menu','Menu'],['gallery',"Foto's"],['contact','Contact']];
+
+  return React.createElement('div',{style:{fontFamily:'var(--font-sans)',minHeight:'100vh',background:'var(--surface-0)',color:'var(--text-primary)'}},
+    // NAV
+    React.createElement('nav',{style:S.nav},
+      React.createElement('div',{style:S.navIn},
+        React.createElement('span',{style:S.logo,onClick:()=>go('home')},'Bistro Likert'),
+        React.createElement('div',{style:S.navLinks},
+          ...navItems.map(([v,l])=>React.createElement('button',{key:v,style:S.nb(view===v),onClick:()=>go(v)},l)),
+          React.createElement('button',{style:{...S.nb(view==='admin'),color:isAdmin?A:'#6b5c4a'},onClick:()=>go('admin')},
+            isAdmin?'⚙ Beheer':'Beheer')
+        )
+      )
+    ),
+    // MAIN
+    React.createElement('div',{style:S.main},
+      view==='home'&&React.createElement(HomeView,{special,gallery,go}),
+      view==='menu'&&React.createElement(MenuView,{menu}),
+      view==='gallery'&&React.createElement(GalleryView,{gallery}),
+      view==='contact'&&React.createElement(ContactView,null),
+      view==='admin'&&React.createElement(AdminView,{isAdmin,setIsAdmin,adv,setAdv,menu,upMenu,special,upSpecial,gallery,upGallery})
+    ),
+    // FOOTER
+    React.createElement('footer',{style:S.footer},
+      React.createElement('p',{style:{margin:'0 0 4px',fontFamily:'Georgia,serif',color:'#9a8070',fontSize:15}},'Bistro Likert'),
+      React.createElement('p',{style:{margin:0}},
+        'Marktplaats 12 · 1770 Liedekerke · ',
+        React.createElement('span',{style:{color:'#8a7060'}},'+32 54 12 34 56')
+      ),
+      !isAdmin&&React.createElement('button',{onClick:()=>go('admin'),style:{marginTop:8,background:'none',border:'none',color:'#5a4a3a',fontSize:11,cursor:'pointer',textDecoration:'underline'}},'Eigenaar? Aanmelden')
+    )
+  );
+}
+
+// ─── Home ─────────────────────────────────────────────────────────────────────
+function HomeView({special,gallery,go}){
+  return React.createElement('div',null,
+    // Hero
+    React.createElement('div',{style:S.hero},
+      React.createElement('p',{style:S.heroLabel},'Welkom bij'),
+      React.createElement('h1',{style:S.heroTitle},'Bistro Likert'),
+      React.createElement('p',{style:S.heroPara},'Een warm, huiselijk bistro in het hart van Liedekerke.\nVerse, seizoensgebonden keuken met een Belgisch karakter.'),
+      React.createElement('div',{style:{display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap'}},
+        React.createElement('button',{style:{...S.btn('p'),padding:'9px 22px',fontSize:14},onClick:()=>go('menu')},'Bekijk ons menu'),
+        React.createElement('button',{style:{...S.btn(),padding:'9px 22px',fontSize:14,border:'1px solid #3a2d1e',color:'#c8b49a',background:'none'},onClick:()=>go('contact')},'Reserveren')
+      )
+    ),
+    // Suggestie
+    React.createElement('div',null,
+      React.createElement('div',{style:S.specialBox},
+        React.createElement('div',{style:{display:'flex',gap:'1.5rem',flexWrap:'wrap',alignItems:'flex-start'}},
+          special.photo&&React.createElement('img',{src:special.photo,alt:special.title,style:{width:180,height:130,objectFit:'cover',borderRadius:9,flexShrink:0}}),
+          React.createElement('div',{style:{flex:1}},
+            React.createElement('span',{style:S.specialBadge},'Suggestie van de week'),
+            React.createElement('h2',{style:S.specialTitle},special.title),
+            React.createElement('p',{style:S.specialDesc},special.description),
+            special.price&&React.createElement('p',{style:S.specialPrice},eur(special.price))
+          )
+        )
+      )
+    ),
+    // Gallery preview
+    gallery.length>0&&React.createElement('div',null,
+      React.createElement('h2',{style:{fontSize:18,fontWeight:500,marginBottom:'1rem'}},"Onze bistro"),
+      React.createElement('div',{style:S.grid},
+        gallery.slice(0,4).map(p=>React.createElement('img',{key:p.id,src:p.photo,alt:p.caption||'Bistro Likert',style:S.photo}))
+      ),
+      gallery.length>4&&React.createElement('button',{style:{...S.btn(),marginTop:10,fontSize:13},onClick:()=>go('gallery')},"Alle foto's bekijken →")
+    )
+  );
+}
+
+// ─── Menu ─────────────────────────────────────────────────────────────────────
+function MenuView({menu}){
+  return React.createElement('div',null,
+    React.createElement('h1',{style:{fontSize:24,fontWeight:500,marginBottom:'0.5rem'}},'Ons menu'),
+    React.createElement('p',{style:{color:'var(--text-secondary)',fontSize:13,marginBottom:'1.5rem'}},'Alle prijzen zijn inclusief BTW. Vraag ons personeel naar allergeneninformatie.'),
+    ...menu.map(cat=>React.createElement('div',{key:cat.id,style:{...S.card,marginBottom:'1.25rem'}},
+      React.createElement('p',{style:S.catTitle},cat.category),
+      ...cat.items.map((item,i)=>React.createElement('div',{key:item.id,style:{...S.menuRow,borderBottom:i===cat.items.length-1?'none':'0.5px solid var(--border)'}},
+        React.createElement('div',{style:{flex:1}},
+          React.createElement('p',{style:{margin:0,fontWeight:500,fontSize:14}},item.name),
+          item.description&&React.createElement('p',{style:{margin:'2px 0 0',fontSize:12,color:'var(--text-secondary)'}},item.description)
+        ),
+        React.createElement('span',{style:S.menuPrice},eur(item.price))
+      ))
+    ))
+  );
+}
+
+// ─── Gallery ──────────────────────────────────────────────────────────────────
+function GalleryView({gallery}){
+  return React.createElement('div',null,
+    React.createElement('h1',{style:{fontSize:24,fontWeight:500,marginBottom:'0.5rem'}},"Foto's"),
+    React.createElement('p',{style:{color:'var(--text-secondary)',fontSize:13,marginBottom:'1.5rem'}},'Een blik in onze bistro.'),
+    gallery.length===0
+      ?React.createElement('div',{style:{...S.card,textAlign:'center',padding:'3rem',color:'var(--text-muted)'}},'Nog geen foto\'s toegevoegd door de eigenaar.')
+      :React.createElement('div',{style:S.grid},
+        ...gallery.map(p=>React.createElement('div',{key:p.id},
+          React.createElement('img',{src:p.photo,alt:p.caption||'Bistro Likert',style:S.photo}),
+          p.caption&&React.createElement('p',{style:{fontSize:12,color:'var(--text-muted)',marginTop:4}},p.caption)
+        ))
+      )
+  );
+}
+
+// ─── Contact ──────────────────────────────────────────────────────────────────
+function ContactView(){
+  const cards=[
+    {icon:'📍',title:'Adres',lines:['Marktplaats 12','1770 Liedekerke, België']},
+    {icon:'📞',title:'Telefoon',lines:['+32 54 12 34 56','Ma–za 11u–22u']},
+    {icon:'✉️',title:'E-mail',lines:['info@bistrolikert.be']},
+    {icon:'🕐',title:'Openingsuren',lines:['Ma–vr: 11:30–14:30 & 17:30–22:00','Zaterdag: 11:30–22:30','Zondag: gesloten']},
+  ];
+  return React.createElement('div',null,
+    React.createElement('h1',{style:{fontSize:24,fontWeight:500,marginBottom:'1.5rem'}},'Contact & Reservaties'),
+    React.createElement('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12,marginBottom:'1.5rem'}},
+      ...cards.map(c=>React.createElement('div',{key:c.title,style:S.card},
+        React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:'0.6rem'}},
+          React.createElement('span',{style:{fontSize:18},'aria-hidden':'true'},c.icon),
+          React.createElement('span',{style:{fontWeight:500,fontSize:14}},c.title)
+        ),
+        ...c.lines.map(l=>React.createElement('p',{key:l,style:{fontSize:13,color:'var(--text-secondary)',lineHeight:1.7,margin:0}},l))
+      ))
+    ),
+    React.createElement('div',{style:S.card},
+      React.createElement('p',{style:{fontWeight:500,marginBottom:'0.5rem',fontSize:15}},'Reserveren'),
+      React.createElement('p',{style:{fontSize:13,color:'var(--text-secondary)',lineHeight:1.7}},'Voor reservaties kunt u ons telefonisch bereiken via +32 54 12 34 56 of een e-mail sturen naar info@bistrolikert.be. Wij bevestigen zo snel mogelijk.')
+    )
+  );
+}
+
+// ─── Admin ────────────────────────────────────────────────────────────────────
+function AdminView({isAdmin,setIsAdmin,adv,setAdv,menu,upMenu,special,upSpecial,gallery,upGallery}){
+  if(!isAdmin)return React.createElement(AdminLogin,{setIsAdmin});
+  const tabs=[['special','⭐ Suggestie'],['menu','📋 Menu'],['gallery','🖼 Foto\'s']];
+  return React.createElement('div',null,
+    React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.5rem'}},
+      React.createElement('h1',{style:{fontSize:22,fontWeight:500}},'Beheer'),
+      React.createElement('button',{style:S.btn('d2'),onClick:()=>setIsAdmin(false)},'Afmelden')
+    ),
+    React.createElement('div',{style:{display:'flex',gap:'1.25rem',alignItems:'flex-start'}},
+      React.createElement('div',{style:S.sb},
+        React.createElement('p',{style:{fontSize:11,color:'var(--text-muted)',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:8}},'Beheer'),
+        ...tabs.map(([v,l])=>React.createElement('button',{key:v,style:S.sbBtn(adv===v),onClick:()=>setAdv(v)},l))
+      ),
+      React.createElement('div',{style:{flex:1}},
+        adv==='special'&&React.createElement(AdminSpecial,{special,upSpecial}),
+        adv==='menu'&&React.createElement(AdminMenu,{menu,upMenu}),
+        adv==='gallery'&&React.createElement(AdminGallery,{gallery,upGallery})
+      )
+    )
+  );
+}
+
+function AdminLogin({setIsAdmin}){
+  const [pw,setPw]=useState('');
+  const [err,setErr]=useState(false);
+  const login=()=>{if(pw===PASS){setIsAdmin(true)}else setErr(true)};
+  return React.createElement('div',{style:{maxWidth:340,margin:'3rem auto'}},
+    React.createElement('div',{style:S.card},
+      React.createElement('div',{style:{textAlign:'center',marginBottom:'1.5rem'}},
+        React.createElement('div',{style:{fontSize:32,marginBottom:'0.5rem'}},'🔒'),
+        React.createElement('h2',{style:{fontSize:18,fontWeight:500,marginBottom:4}},'Aanmelden'),
+        React.createElement('p',{style:{fontSize:13,color:'var(--text-secondary)'}},'Alleen voor de eigenaar van Bistro Likert')
+      ),
+      React.createElement('label',{style:S.lbl},'Wachtwoord'),
+      React.createElement('input',{type:'password',value:pw,style:{...S.inp,marginBottom:err?6:14},
+        onChange:e=>{setPw(e.target.value);setErr(false)},
+        onKeyDown:e=>e.key==='Enter'&&login(),
+        placeholder:'Voer wachtwoord in'}),
+      err&&React.createElement('p',{style:{color:'#c0392b',fontSize:12,marginBottom:10}},'Ongeldig wachtwoord. Probeer opnieuw.'),
+      React.createElement('button',{style:{...S.btn('p'),width:'100%',padding:'9px'},onClick:login},'Aanmelden'),
+      React.createElement('p',{style:{fontSize:11,color:'var(--text-muted)',marginTop:12,textAlign:'center'}},'Demo wachtwoord: bistro2024')
+    )
+  );
+}
+
+// ─── Admin Special ────────────────────────────────────────────────────────────
+function AdminSpecial({special,upSpecial}){
+  const [form,setForm]=useState({...special});
+  const [saved,setSaved]=useState(false);
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const handlePhoto=async e=>{const f=e.target.files[0];if(f){const b=await toB64(f);set('photo',b)}};
+  const save=async()=>{await upSpecial(form);setSaved(true);setTimeout(()=>setSaved(false),2500)};
+  return React.createElement('div',{style:S.card},
+    React.createElement('h2',{style:{fontSize:16,fontWeight:500,marginBottom:'1.25rem'}},'Suggestie van de week'),
+    React.createElement('div',{style:{display:'grid',gap:12}},
+      React.createElement('div',null,
+        React.createElement('label',{style:S.lbl},'Naam van het gerecht'),
+        React.createElement('input',{style:S.inp,value:form.title,onChange:e=>set('title',e.target.value),placeholder:'Bijv. Gegrilde zalm met kruidenboter'})
+      ),
+      React.createElement('div',null,
+        React.createElement('label',{style:S.lbl},'Beschrijving'),
+        React.createElement('textarea',{style:S.ta,value:form.description,onChange:e=>set('description',e.target.value),placeholder:'Korte beschrijving van het gerecht…'})
+      ),
+      React.createElement('div',null,
+        React.createElement('label',{style:S.lbl},'Prijs (€)'),
+        React.createElement('input',{style:{...S.inp,width:120},type:'number',step:'0.5',value:form.price,onChange:e=>set('price',parseFloat(e.target.value)||0)})
+      ),
+      React.createElement('div',null,
+        React.createElement('label',{style:S.lbl},'Foto (optioneel)'),
+        React.createElement('input',{type:'file',accept:'image/*',onChange:handlePhoto,style:{fontSize:13}}),
+        form.photo&&React.createElement('div',{style:{display:'flex',gap:10,alignItems:'flex-start',marginTop:8}},
+          React.createElement('img',{src:form.photo,alt:'',style:{width:100,height:75,objectFit:'cover',borderRadius:7}}),
+          React.createElement('button',{style:{...S.btn('d2'),fontSize:12,padding:'4px 10px'},onClick:()=>set('photo',null)},'Verwijderen')
+        )
+      )
+    ),
+    React.createElement('div',{style:{marginTop:16,display:'flex',gap:10,alignItems:'center'}},
+      React.createElement('button',{style:{...S.btn('p'),padding:'8px 20px'},onClick:save},'Opslaan'),
+      saved&&React.createElement('span',{style:{color:'#27ae60',fontSize:13}},'✓ Opgeslagen!')
+    ),
+    // Preview
+    React.createElement('div',{style:{marginTop:20,paddingTop:16,borderTop:'0.5px solid var(--border)'}},
+      React.createElement('p',{style:{fontSize:11,color:'var(--text-muted)',marginBottom:10}},'Voorvertoning:'),
+      React.createElement('div',{style:{...S.specialBox,padding:'1.25rem'}},
+        React.createElement('div',{style:{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-start'}},
+          form.photo&&React.createElement('img',{src:form.photo,alt:'',style:{width:100,height:75,objectFit:'cover',borderRadius:7,flexShrink:0}}),
+          React.createElement('div',null,
+            React.createElement('span',{style:S.specialBadge},'Suggestie van de week'),
+            React.createElement('p',{style:{...S.specialTitle,fontSize:18}},form.title||'(geen titel)'),
+            React.createElement('p',{style:{...S.specialDesc,fontSize:13}},form.description||'(geen beschrijving)'),
+            form.price>0&&React.createElement('p',{style:{...S.specialPrice,fontSize:16}},eur(form.price))
+          )
+        )
+      )
+    )
+  );
+}
+
+// ─── Admin Menu ───────────────────────────────────────────────────────────────
+function AdminMenu({menu,upMenu}){
+  const [editing,setEditing]=useState(null);
+  const [editForm,setEditForm]=useState({});
+  const [saved,setSaved]=useState(false);
+  const [newCat,setNewCat]=useState('');
+  const setEF=(k,v)=>setEditForm(f=>({...f,[k]:v}));
+
+  const notify=async m=>{await upMenu(m);setSaved(true);setTimeout(()=>setSaved(false),2000)};
+  const startEdit=(catId,item)=>{setEditing(`${catId}|${item.id}`);setEditForm({...item})};
+  const cancelEdit=()=>{setEditing(null);setEditForm({})};
+  const saveEdit=async(catId)=>{
+    const m=menu.map(c=>c.id!==catId?c:{...c,items:c.items.map(i=>i.id===editForm.id?{...editForm,price:parseFloat(editForm.price)||0}:i)});
+    await notify(m);cancelEdit();
+  };
+  const addItem=async catId=>{
+    const m=menu.map(c=>c.id!==catId?c:{...c,items:[...c.items,{id:uid(),name:'Nieuw gerecht',description:'',price:10}]});
+    await notify(m);
+  };
+  const delItem=async(catId,iid)=>{
+    const m=menu.map(c=>c.id!==catId?c:{...c,items:c.items.filter(i=>i.id!==iid)});
+    await notify(m);
+  };
+  const addCat=async()=>{
+    if(!newCat.trim())return;
+    await notify([...menu,{id:uid(),category:newCat.trim(),items:[]}]);
+    setNewCat('');
+  };
+  const delCat=async catId=>{
+    if(!window.confirm('Categorie en alle gerechten verwijderen?'))return;
+    await notify(menu.filter(c=>c.id!==catId));
+  };
+
+  return React.createElement('div',null,
+    React.createElement('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:'1.25rem'}},
+      React.createElement('h2',{style:{fontSize:16,fontWeight:500}},'Menu beheren'),
+      saved&&React.createElement('span',{style:{color:'#27ae60',fontSize:13}},'✓ Opgeslagen')
+    ),
+    ...menu.map(cat=>React.createElement('div',{key:cat.id,style:S.card},
+      React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'0.75rem'}},
+        React.createElement('span',{style:{fontWeight:500,fontSize:14}},cat.category),
+        React.createElement('div',{style:{display:'flex',gap:6}},
+          React.createElement('button',{style:{...S.btn(),padding:'4px 10px',fontSize:12},onClick:()=>addItem(cat.id)},'+ Gerecht'),
+          React.createElement('button',{style:{...S.btn('d2'),padding:'4px 8px',fontSize:12},onClick:()=>delCat(cat.id)},'✕')
+        )
+      ),
+      ...cat.items.map(item=>{
+        const key=`${cat.id}|${item.id}`;
+        const isEditing=editing===key;
+        if(isEditing)return React.createElement('div',{key:item.id,style:{background:'var(--surface-1)',borderRadius:8,padding:'10px',marginBottom:6}},
+          React.createElement('div',{style:{display:'grid',gap:8}},
+            React.createElement('div',{style:{display:'flex',gap:8}},
+              React.createElement('input',{style:{...S.inp,flex:2},value:editForm.name||'',onChange:e=>setEF('name',e.target.value),placeholder:'Naam'}),
+              React.createElement('input',{style:{...S.inp,width:80},type:'number',step:'0.5',value:editForm.price||'',onChange:e=>setEF('price',e.target.value),placeholder:'Prijs'})
+            ),
+            React.createElement('input',{style:S.inp,value:editForm.description||'',onChange:e=>setEF('description',e.target.value),placeholder:'Beschrijving (optioneel)'}),
+            React.createElement('div',{style:{display:'flex',gap:6}},
+              React.createElement('button',{style:{...S.btn('p'),padding:'5px 12px',fontSize:12},onClick:()=>saveEdit(cat.id)},'Opslaan'),
+              React.createElement('button',{style:{...S.btn(),padding:'5px 12px',fontSize:12},onClick:cancelEdit},'Annuleren')
+            )
+          )
+        );
+        return React.createElement('div',{key:item.id,style:{...S.menuRow,alignItems:'center',fontSize:13}},
+          React.createElement('div',{style:{flex:1}},
+            React.createElement('span',{style:{fontWeight:500}},item.name),
+            item.description&&React.createElement('span',{style:{color:'var(--text-muted)',marginLeft:6,fontSize:12}},item.description)
+          ),
+          React.createElement('span',{style:{...S.menuPrice,fontSize:13}},eur(item.price)),
+          React.createElement('div',{style:{display:'flex',gap:4,marginLeft:8}},
+            React.createElement('button',{style:{...S.btn(),padding:'3px 7px',fontSize:12},onClick:()=>startEdit(cat.id,item)},'✏️'),
+            React.createElement('button',{style:{...S.btn('d2'),padding:'3px 7px',fontSize:12},onClick:()=>delItem(cat.id,item.id)},'🗑')
+          )
+        );
+      }),
+      cat.items.length===0&&React.createElement('p',{style:{color:'var(--text-muted)',fontSize:13,textAlign:'center',padding:'0.5rem 0'}},'Geen gerechten — klik op "+ Gerecht" om toe te voegen.')
+    )),
+    React.createElement('div',{style:{...S.card,display:'flex',gap:8,alignItems:'center'}},
+      React.createElement('input',{style:{...S.inp,flex:1},value:newCat,onChange:e=>setNewCat(e.target.value),onKeyDown:e=>e.key==='Enter'&&addCat(),placeholder:'Nieuwe categorie (bijv. Salades, Vis)'}),
+      React.createElement('button',{style:{...S.btn('p'),flexShrink:0},onClick:addCat},'+ Categorie')
+    )
+  );
+}
+
+// ─── Admin Gallery ────────────────────────────────────────────────────────────
+function AdminGallery({gallery,upGallery}){
+  const [caption,setCaption]=useState('');
+  const [uploading,setUploading]=useState(false);
+  const [saved,setSaved]=useState('');
+  const fileRef=useRef();
+
+  const addPhoto=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    setUploading(true);
+    try{
+      const b=await toB64(f);
+      const g=[...gallery,{id:uid(),photo:b,caption:caption.trim()}];
+      await upGallery(g);
+      setCaption('');setSaved('Foto toegevoegd!');
+      setTimeout(()=>setSaved(''),2500);
+      if(fileRef.current)fileRef.current.value='';
+    }catch(e){setSaved('Fout: foto te groot?')}
+    setUploading(false);
+  };
+  const del=async id=>{await upGallery(gallery.filter(p=>p.id!==id))};
+
+  return React.createElement('div',null,
+    React.createElement('div',{style:S.card},
+      React.createElement('h2',{style:{fontSize:16,fontWeight:500,marginBottom:'1.25rem'}},"Foto's beheren"),
+      React.createElement('div',{style:{display:'grid',gap:10}},
+        React.createElement('div',null,
+          React.createElement('label',{style:S.lbl},'Bijschrift (optioneel)'),
+          React.createElement('input',{style:S.inp,value:caption,onChange:e=>setCaption(e.target.value),placeholder:'Bijv. Ons terras in de zomer'})
+        ),
+        React.createElement('div',null,
+          React.createElement('label',{style:S.lbl},'Foto selecteren'),
+          React.createElement('input',{ref:fileRef,type:'file',accept:'image/*',onChange:addPhoto,style:{fontSize:13},disabled:uploading})
+        ),
+        uploading&&React.createElement('p',{style:{color:'var(--text-muted)',fontSize:13}},'Foto uploaden…'),
+        saved&&React.createElement('p',{style:{color:'#27ae60',fontSize:13}},saved)
+      )
+    ),
+    gallery.length===0
+      ?React.createElement('div',{style:{...S.card,textAlign:'center',padding:'2rem',color:'var(--text-muted)'}},
+          "Nog geen foto's — voeg hierboven een foto toe.")
+      :React.createElement('div',{style:{marginTop:'1rem'}},
+          React.createElement('p',{style:{fontSize:12,color:'var(--text-muted)',marginBottom:10}},`${gallery.length} foto${gallery.length!==1?'\'s':''} in de galerij`),
+          React.createElement('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:8}},
+            ...gallery.map(p=>React.createElement('div',{key:p.id,style:{position:'relative'}},
+              React.createElement('img',{src:p.photo,alt:p.caption||'',style:{...S.photo,height:100}}),
+              p.caption&&React.createElement('p',{style:{fontSize:11,color:'var(--text-muted)',marginTop:3}},p.caption),
+              React.createElement('button',{
+                style:{position:'absolute',top:4,right:4,background:'rgba(0,0,0,0.6)',border:'none',color:'#fff',borderRadius:4,padding:'2px 6px',fontSize:11,cursor:'pointer'},
+                onClick:()=>del(p.id)
+              },'✕')
+            ))
+          )
+        )
+  );
+}
+
+ReactDOM.render(React.createElement(App),document.getElementById('root'));
+</script>
