@@ -5,13 +5,14 @@ html,body{height:100%}
 body{
   font-family:var(--font-sans);
   color:var(--text-primary);
-  background-image:url('images/zaal.png');
+  background-color:#1a0e00;
+  background-image:url('zaal.jpg');
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
   background-attachment:fixed;
 }
-#root{min-height:100vh;background:rgba(255,255,255,0.88)}
+#root{min-height:100vh;background:transparent}
 input,textarea,select{font-family:inherit}
 button{font-family:inherit;cursor:pointer}
 </style>
@@ -152,15 +153,15 @@ function App(){
 
 // ─── Home ─────────────────────────────────────────────────────────────────────
 function HomeView({special,gallery,go}){
-  return React.createElement('div',null,
+  return React.createElement('div',{style:{background:'rgba(26,14,0,0.55)',borderRadius:20,padding:'1.25rem',backdropFilter:'blur(2px)'}},
     // Hero
     React.createElement('div',{style:S.hero},
       React.createElement('p',{style:S.heroLabel},'Welkom bij'),
       React.createElement('h1',{style:S.heroTitle},'Bistro Likert'),
-      React.createElement('p',{style:S.heroPara},'Een warm, huiselijk bistro in het hart van Liedekerke.\nVerse, seizoensgebonden keuken met een Belgisch karakter.'),
+      React.createElement('p',{style:S.heroPara},'Bistro Likert heeft als doel een plek in Likert (Liedekerke) te creëren waar u terecht kan voor een gewone hap en een drankje in een fijn kader.\nNeem alvast een kijkje op onze kaart en wij hopen u snel te mogen begroeten.\nTot gauw ,\Didier, Alain en het Bistro Likert Team'),
       React.createElement('div',{style:{display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap'}},
         React.createElement('button',{style:{...S.btn('p'),padding:'9px 22px',fontSize:14},onClick:()=>go('menu')},'Bekijk ons menu'),
-        React.createElement('button',{style:{...S.btn(),padding:'9px 22px',fontSize:14,border:'1px solid #3a2d1e',color:'#c8b49a',background:'none'},onClick:()=>go('contact')},'Reserveren')
+        React.createElement('button',{style:{...S.btn(),padding:'9px 22px',fontSize:14,border:'1px solid #3a2d1e',color:'#c8b49a',background:'none'},onClick:()=>go('contact')},'Reserveren 📞 ')
       )
     ),
     // Suggestie
