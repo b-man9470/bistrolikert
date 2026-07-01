@@ -1,8 +1,17 @@
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--A:#b8860b;--AL:#fdf3e0;--ADK:#7a5a00;--DARK:#1a0e00;--DARKM:#2a1a08}
-body{font-family:var(--font-sans);background:var(--surface-0);color:var(--text-primary)}
+html,body{height:100%}
+body{
+  font-family:var(--font-sans);
+  color:var(--text-primary);
+  background-image:url('images/zaal.png');
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+}
+#root{min-height:100vh;background:rgba(255,255,255,0.88)}
 input,textarea,select{font-family:inherit}
 button{font-family:inherit;cursor:pointer}
 </style>
@@ -109,7 +118,7 @@ function App(){
 
   const navItems=[['home','Home'],['menu','Menu'],['gallery',"Foto's"],['contact','Contact']];
 
-  return React.createElement('div',{style:{fontFamily:'var(--font-sans)',minHeight:'100vh',background:'var(--surface-0)',color:'var(--text-primary)'}},
+  return React.createElement('div',{style:{fontFamily:'var(--font-sans)',minHeight:'100vh',background:'transparent',color:'var(--text-primary)'}},
     // NAV
     React.createElement('nav',{style:S.nav},
       React.createElement('div',{style:S.navIn},
