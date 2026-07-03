@@ -270,7 +270,7 @@ function App(){
 
   if(loading)return React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',height:300,color:'var(--text-muted)'}},'Laden…');
 
-  const navItems=[['home','Home'],['gerechten','Gerechten'],['dranken','Dranken'],['contact','Contact']];
+  const navItems=[['home','Home'],['gerechten','Gerechten'],['dranken','Dranken']];
 
   return React.createElement('div',{style:{fontFamily:'var(--font-sans)',minHeight:'100vh',background:'transparent',color:'var(--text-primary)'}},
     // NAV
@@ -278,9 +278,7 @@ function App(){
       React.createElement('div',{style:S.navIn},
         React.createElement('span',{style:S.logo,onClick:()=>go('home')},'Bistro Likert'),
         React.createElement('div',{style:S.navLinks},
-          ...navItems.map(([v,l])=>React.createElement('button',{key:v,style:S.nb(view===v),onClick:()=>go(v)},l)),
-          React.createElement('button',{style:{...S.nb(view==='admin'),color:isAdmin?A:'#6b5c4a'},onClick:()=>go('admin')},
-            isAdmin?'⚙ Beheer':'Beheer')
+          ...navItems.map(([v,l])=>React.createElement('button',{key:v,style:S.nb(view===v),onClick:()=>go(v)},l))
         )
       )
     ),
