@@ -24,7 +24,7 @@ button{font-family:inherit;cursor:pointer}
 const {useState,useEffect,useRef} = React;
 const A='#b8860b',AL='#fdf8ed',DARK='#1a0e00',DARKM='#2d1c08';
 const PASS='bistro2024';
-const SK={menu:'bl-menu-v2',special:'bl-special-v2',gallery:'bl-gallery-v2'};
+const SK={dishes:'bl-dishes-v3',drinks:'bl-drinks-v3',special:'bl-special-v2'};
 const uid=()=>Math.random().toString(36).slice(2,9);
 const eur=p=>`€\u00a0${Number(p).toFixed(2).replace('.',',')}`;
 
@@ -32,30 +32,182 @@ async function sGet(k){try{const r=await window.storage.get(k);return r?JSON.par
 async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch(e){console.error(e)}}
 function toB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 
-const DEF_MENU=[
-  {id:'c1',category:'Voorgerechten',items:[
-    {id:'i1',name:'Soep van de dag',description:'Dagelijks wisselend, vers bereid met seizoensgroenten',price:7.5},
-    {id:'i2',name:'Garnaalkroketten (4 stuks)',description:'Huisgemaakt, geserveerd met tomatensaus',price:13.5},
-    {id:'i3',name:'Carpaccio van rundvlees',description:'Met rucola, parmezaan en truffelolie',price:12.5},
+// ─── Standaardkaart (overgenomen van bistrolikert.be) ─────────────────────────
+const DEF_DISHES=[
+  {id:'d1',category:'Lunch',note:'Elke donderdag, vrijdag en zaterdagmiddag',items:[
+    {id:uid(),name:'Steak friet met salade',description:'Champignon- of pepersaus',price:19.5},
   ]},
-  {id:'c2',category:'Hoofdgerechten',items:[
-    {id:'i4',name:'Bistrosteak',description:'Met frietjes, seizoensgroenten en saus naar keuze',price:24.5},
-    {id:'i5',name:'Gegrilde zeebaars',description:'Op spinazie met aardappelgratin en kruidenboter',price:22.0},
-    {id:'i6',name:'Pasta van de chef',description:'Wisselend dagreceptrecept — vraag ons personeel',price:16.5},
-    {id:'i7',name:'Vegetarische suggestie',description:'Vraag naar ons huidig vegetarisch aanbod',price:15.0},
+  {id:'d2',category:'In afwachting',items:[
+    {id:uid(),name:'Bitterballen of mini loempia',description:'8 stuks € 11 · 12 stuks € 15,50',price:11},
+    {id:uid(),name:'Mixed apero hapjes (warm)',description:'8 stuks € 11 · 16 stuks € 16,50',price:11},
   ]},
-  {id:'c3',category:'Desserts',items:[
-    {id:'i8',name:'Dame blanche',description:'Vanille-ijs met warme huisgemaakte chocoladesaus',price:7.5},
-    {id:'i9',name:'Crème brûlée',description:'Klassiek recept met echte vanille',price:8.0},
-    {id:'i10',name:'Kaasplank',description:'Selectie Belgische kazen met huisgemaakte confituur',price:9.5},
+  {id:'d3',category:'Voorgerechten',items:[
+    {id:uid(),name:'Ambachtelijke kaaskroket (oude Brugse)',description:'1 stuk',price:14},
+    {id:uid(),name:'Iberico kroket',description:'',price:15},
+    {id:uid(),name:'Ambachtelijke garnaalkroket',description:'1 stuk',price:16},
+    {id:uid(),name:'Scampi lookboter / Diabolique / Thaise curry',description:'6 stuks',price:18},
   ]},
-  {id:'c4',category:'Dranken',items:[
-    {id:'i11',name:'Belgisch bier',description:'Vraag naar ons tap- en flessenbieraanbod',price:3.5},
-    {id:'i12',name:'Huiswijn (glas)',description:'Rood, wit of rosé',price:5.5},
-    {id:'i13',name:'Frisdrank',description:'Cola, Fanta, Sprite, Spa, Tönissteiner',price:3.5},
-    {id:'i14',name:'Koffie & thee',description:'Espresso, cappuccino, latte, kruidenthee',price:3.0},
+  {id:'d4',category:'Pastagerechten',items:[
+    {id:uid(),name:'Spaghetti (klein)',description:'',price:14},
+    {id:uid(),name:'Spaghetti (groot)',description:'',price:16},
+    {id:uid(),name:'Scampi Thaise curry / Diabolique',description:'',price:26},
+  ]},
+  {id:'d5',category:'Salades en koude gerechten',items:[
+    {id:uid(),name:'Salade Burrata',description:'',price:22},
+    {id:uid(),name:'Salade Geitenkaas',description:'',price:24},
+    {id:uid(),name:'Salade Gerookte Zalm',description:'',price:24},
+    {id:uid(),name:'Scampi Salade',description:'',price:24},
+  ]},
+  {id:'d6',category:'Ambachtelijke kroketten met brood en salade',items:[
+    {id:uid(),name:'2 Kaaskroketten (oude Brugse)',description:'',price:20},
+    {id:uid(),name:'2 Garnaalkroketten',description:'',price:24},
+    {id:uid(),name:'Duo kaas- en garnaalkroket',description:'',price:22},
+    {id:uid(),name:'2 Ibericohamkroketten',description:'',price:22},
+  ]},
+  {id:'d7',category:'Croques',note:'Niet verkrijgbaar op zaterdag, zondag en feestdagen',items:[
+    {id:uid(),name:'Croque monsieur',description:'',price:14},
+    {id:uid(),name:'Croque bolognaise',description:'',price:16},
+    {id:uid(),name:'Croque hawaï',description:'',price:15},
+  ]},
+  {id:'d8',category:'Vleesgerechten',note:'Keuze uit frietjes of kroketten · Sauzen champignon-/pepersaus € 5,50 · Bearnaisesaus € 6',items:[
+    {id:uid(),name:'Vol-au-vent',description:'Met vidé, supplement € 2',price:27},
+    {id:uid(),name:'Varkenswangen Leffe',description:'',price:28},
+    {id:uid(),name:'Brochette van kalkoen natuur',description:'',price:28},
+    {id:uid(),name:'Steak tartare (américain)',description:'Vers gemalen',price:29},
+    {id:uid(),name:'Crunchy kipburger',description:'',price:29},
+    {id:uid(),name:'Steak 300 g',description:'',price:29},
+    {id:uid(),name:'Filet mignon 350 g natuur',description:'',price:34},
+    {id:uid(),name:'Entrecôte wit-blauw 350 g',description:'',price:32},
+  ]},
+  {id:'d9',category:'Visgerechten',note:'Keuze uit frietjes of kroketten',items:[
+    {id:uid(),name:'Scampi lookboter / Diabolique / Thaise curry',description:'10 stuks',price:28},
+    {id:uid(),name:'Golden Shrimpburger',description:'Met garnaal',price:30},
+    {id:uid(),name:'Tongrolletjes witte wijnsaus',description:'',price:31},
+    {id:uid(),name:'Kabeljauwhaasje van het huis',description:'',price:36},
+  ]},
+  {id:'d10',category:'Kindergerechten',note:'Enkel voor -12 jaar',items:[
+    {id:uid(),name:'Spaghetti',description:'',price:13},
+    {id:uid(),name:'Kipkrokantje met appelmoes en frietjes',description:'',price:15},
+    {id:uid(),name:'2 Fricandellen met frietjes',description:'',price:14},
+    {id:uid(),name:'Vol-au-vent kids',description:'',price:14},
+  ]},
+  {id:'d11',category:'Desserts en warme appeltaart',items:[
+    {id:uid(),name:'Warme appeltaart',description:'',price:9},
+    {id:uid(),name:'Warme appeltaart met ijs',description:'',price:13},
+    {id:uid(),name:'Crème brûlée',description:'',price:9},
+    {id:uid(),name:'Tiramisu',description:'',price:9.5},
+    {id:uid(),name:'Moelleux van chocolade met vanille-ijs',description:'',price:13},
+  ]},
+  {id:'d12',category:"Onze ijsjes 'Potje Kaat'",items:[
+    {id:uid(),name:'1 bol',description:'Vanille, mokka of chocolade',price:4},
+    {id:uid(),name:'Coupe 3 bollen',description:'Vanille, mokka of chocolade',price:11},
+    {id:uid(),name:'Kinderijsje',description:'',price:8},
+    {id:uid(),name:'IJskoffie',description:'2 bollen',price:11},
+    {id:uid(),name:'Dame Blanche',description:'',price:12},
+    {id:uid(),name:'Dame Noire',description:'Chocolade-ijs met warme chocolade',price:12},
+    {id:uid(),name:'Coupe Brésilienne',description:'',price:11},
+    {id:uid(),name:'Coupe Advocaat',description:'',price:13},
+    {id:uid(),name:'Coupe Bistro Likert',description:'Vanille-ijs, speculooscrumble, Baileys',price:13},
   ]},
 ];
+
+const DEF_DRINKS=[
+  {id:'r1',category:'Frisdranken',items:[
+    {id:uid(),name:'Plat/bruisend water Chaudfontaine',description:'',price:3},
+    {id:uid(),name:'Coca-Cola / Zero',description:'',price:3},
+    {id:uid(),name:"Jus d'orange / pompelmoes / appelsap",description:'',price:3},
+    {id:uid(),name:'Fanta / Sprite / Fuze Tea / Tonic / Agrumes / Bitter Lemon',description:'',price:3},
+    {id:uid(),name:'Gerolsteiner Orange / Citroen',description:'Suikervrij',price:3},
+    {id:uid(),name:'Tönissteiner Vruchtenkorf',description:'Suikervrij',price:3},
+    {id:uid(),name:'Cécémel',description:'',price:3},
+  ]},
+  {id:'r2',category:'Streekbieren',items:[
+    {id:uid(),name:'Witkap',description:'',price:5},
+    {id:uid(),name:'Affligem Blond',description:'',price:5.5},
+  ]},
+  {id:'r3',category:'Trappistenbier',items:[
+    {id:uid(),name:'Westmalle Blond / Donker',description:'',price:5.5},
+    {id:uid(),name:'Rochefort 10°',description:'',price:6.5},
+  ]},
+  {id:'r4',category:'Bieren op fles',items:[
+    {id:uid(),name:'Jupiler',description:'',price:3},
+    {id:uid(),name:'Carlsberg',description:'',price:4.5},
+    {id:uid(),name:'Vedett',description:'',price:4.5},
+    {id:uid(),name:'Kriek Lindemans',description:'',price:5},
+    {id:uid(),name:'Leffe Blond / Donker / Kasteelbier Rood',description:'',price:5.8},
+    {id:uid(),name:'Omer / Cornet / Brugse Zot / Duvel / Karmeliet',description:'',price:5.8},
+    {id:uid(),name:'Geuze Boon 37,5cl',description:'',price:6.5},
+  ]},
+  {id:'r5',category:'Bieren op fles (alcoholvrij)',items:[
+    {id:uid(),name:'Jupiler 0.0',description:'',price:3},
+    {id:uid(),name:'Carlsberg 0.0',description:'',price:4.5},
+    {id:uid(),name:'Kriek Lindemans 0.0',description:'',price:5},
+    {id:uid(),name:'Cornet 0.0',description:'',price:5},
+  ]},
+  {id:'r6',category:'Huiswijn',items:[
+    {id:uid(),name:'Glas',description:'Wit, rosé of rood',price:5.8},
+    {id:uid(),name:'1/4 Karaf',description:'Wit, rosé of rood',price:11},
+    {id:uid(),name:'1/2 Karaf',description:'Wit, rosé of rood',price:19},
+    {id:uid(),name:'Fles',description:'Wit, rosé of rood',price:25},
+  ]},
+  {id:'r7',category:'Aperitieven',note:'Supplement softdrink (cola/cola zero/tonic/orange) € 3',items:[
+    {id:uid(),name:'Sherry Dry / Pineau des Charentes',description:'',price:6},
+    {id:uid(),name:'Porto wit / rood',description:'',price:6},
+    {id:uid(),name:'Kir',description:'',price:6.5},
+    {id:uid(),name:'Cava',description:'Glas',price:8},
+    {id:uid(),name:'Martini wit / rood / rosato',description:'',price:8},
+    {id:uid(),name:'Funny alcoholvrij',description:'Bitter of zoet',price:9},
+    {id:uid(),name:'Campari / Passoã / Safari / Ricard',description:'',price:9},
+    {id:uid(),name:'Picon witte wijn',description:'',price:9},
+    {id:uid(),name:'Kir Royal',description:'',price:9},
+    {id:uid(),name:'Cocktail Bistro',description:"Excl. jus d'orange of pompelmoes",price:9.5},
+    {id:uid(),name:'Martini Royal',description:'Wit of rosato',price:9.5},
+    {id:uid(),name:'Aperol Spritz',description:'',price:10},
+  ]},
+  {id:'r8',category:"Gin's",note:'Supplement tonic € 3 · Fever-Tree € 4',items:[
+    {id:uid(),name:'Bistro Gin',description:'',price:11},
+    {id:uid(),name:"Gordon's",description:'',price:9},
+    {id:uid(),name:"Hendrick's",description:'',price:10},
+    {id:uid(),name:'Gin Mare',description:'',price:11},
+    {id:uid(),name:'Bulldog',description:'',price:11},
+  ]},
+  {id:'r9',category:'Sterke dranken',note:'Supplement softdrink € 3',items:[
+    {id:uid(),name:'Vodka Eristoff Original',description:'',price:9},
+    {id:uid(),name:'Rhum Bacardi',description:'',price:9},
+    {id:uid(),name:'J&B Whisky',description:'',price:9},
+    {id:uid(),name:'Rhum Havana Club',description:'',price:9.5},
+    {id:uid(),name:"Jack Daniel's Whiskey",description:'',price:9.5},
+    {id:uid(),name:"Ballantine's Whisky",description:'',price:9.5},
+  ]},
+  {id:'r10',category:'Digestieven',items:[
+    {id:uid(),name:'Limoncello',description:'',price:8.5},
+    {id:uid(),name:'Cointreau',description:'',price:8.5},
+    {id:uid(),name:'Amaretto',description:'',price:8.5},
+    {id:uid(),name:"Bailey's",description:'',price:8.5},
+    {id:uid(),name:'Advocaat',description:'',price:9},
+    {id:uid(),name:'Grand Marnier',description:'',price:9},
+    {id:uid(),name:'Cognac Courvoisier',description:'',price:9},
+    {id:uid(),name:'Calvados',description:'',price:9},
+  ]},
+  {id:'r11',category:'Warme dranken',items:[
+    {id:uid(),name:'Koffie',description:'',price:3},
+    {id:uid(),name:'Koffie cafeïnevrij',description:'',price:3},
+    {id:uid(),name:'Thee',description:'Natuur, citroen, munt, rozenbottel of kamille',price:3},
+    {id:uid(),name:'Latte Macchiato',description:'',price:3.5},
+    {id:uid(),name:'Latte Macchiato gearomatiseerd',description:'Vanille, hazelnoot of caramel',price:4.5},
+    {id:uid(),name:'Cappuccino',description:'Slagroom of melkschuim',price:3.5},
+    {id:uid(),name:'Warme chocomelk',description:'',price:3.5},
+    {id:uid(),name:'Warme chocomelk met slagroom',description:'',price:4},
+    {id:uid(),name:'Hasseltse koffie',description:'',price:9},
+    {id:uid(),name:'Advocaat koffie',description:'',price:9},
+    {id:uid(),name:'Ierse koffie',description:'Whisky',price:9},
+    {id:uid(),name:'French koffie',description:'Cognac of Grand Marnier',price:9},
+    {id:uid(),name:'Italian koffie',description:'Amaretto',price:9},
+    {id:uid(),name:'Normandische koffie',description:'',price:9},
+    {id:uid(),name:'Koffie Bistro Likert',description:"Bailey's",price:9},
+  ]},
+];
+
 const DEF_SPECIAL={title:'Gegrilde zalm met citroensaus',description:'Verse Noorse zalm op de plancha, geserveerd met een romige citroensaus, geroosterde seizoensgroenten en huisbereide aardappelgratin.',price:19.5,photo:null};
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
@@ -75,7 +227,8 @@ const S={
   specialTitle:{fontFamily:'Georgia,serif',color:'#f5e6c8',fontSize:24,fontWeight:400,margin:'0 0 0.6rem'},
   specialDesc:{color:'#b8a090',fontSize:14,lineHeight:1.65,margin:'0 0 0.9rem'},
   specialPrice:{color:A,fontSize:20,fontWeight:500},
-  catTitle:{fontSize:12,fontWeight:500,color:A,letterSpacing:'0.08em',textTransform:'uppercase',borderBottom:`1px solid ${AL}`,paddingBottom:'0.5rem',marginBottom:'1rem'},
+  catTitle:{fontSize:12,fontWeight:500,color:A,letterSpacing:'0.08em',textTransform:'uppercase',borderBottom:`1px solid ${AL}`,paddingBottom:'0.5rem',marginBottom:'0.4rem'},
+  catNote:{fontSize:12,color:'var(--text-muted)',fontStyle:'italic',margin:'0 0 0.8rem'},
   menuRow:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'0.65rem 0',borderBottom:'0.5px solid var(--border)'},
   menuPrice:{color:A,fontWeight:500,whiteSpace:'nowrap',marginLeft:14,fontSize:14,flexShrink:0},
   card:{background:'var(--surface-2)',border:'0.5px solid var(--border)',borderRadius:12,padding:'1.25rem',marginBottom:'1rem'},
@@ -98,26 +251,26 @@ function App(){
   const [adv,setAdv]=useState('special');
   const [isAdmin,setIsAdmin]=useState(false);
   const [loading,setLoading]=useState(true);
-  const [menu,setMenu]=useState(DEF_MENU);
+  const [dishes,setDishes]=useState(DEF_DISHES);
+  const [drinks,setDrinks]=useState(DEF_DRINKS);
   const [special,setSpecial]=useState(DEF_SPECIAL);
-  const [gallery,setGallery]=useState([]);
 
   useEffect(()=>{
     (async()=>{
-      const m=await sGet(SK.menu),s=await sGet(SK.special),g=await sGet(SK.gallery);
-      if(m)setMenu(m);if(s)setSpecial(s);if(g)setGallery(g);
+      const d=await sGet(SK.dishes),r=await sGet(SK.drinks),s=await sGet(SK.special);
+      if(d)setDishes(d);if(r)setDrinks(r);if(s)setSpecial(s);
       setLoading(false);
     })();
   },[]);
 
-  const upMenu=async v=>{setMenu(v);await sSet(SK.menu,v)};
+  const upDishes=async v=>{setDishes(v);await sSet(SK.dishes,v)};
+  const upDrinks=async v=>{setDrinks(v);await sSet(SK.drinks,v)};
   const upSpecial=async v=>{setSpecial(v);await sSet(SK.special,v)};
-  const upGallery=async v=>{setGallery(v);await sSet(SK.gallery,v)};
   const go=v=>{setView(v)};
 
   if(loading)return React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',height:300,color:'var(--text-muted)'}},'Laden…');
 
-  const navItems=[['home','Home'],['menu','Menu'],['gallery',"Foto's"],['contact','Contact']];
+  const navItems=[['home','Home'],['gerechten','Gerechten'],['dranken','Dranken'],['contact','Contact']];
 
   return React.createElement('div',{style:{fontFamily:'var(--font-sans)',minHeight:'100vh',background:'transparent',color:'var(--text-primary)'}},
     // NAV
@@ -133,11 +286,11 @@ function App(){
     ),
     // MAIN
     React.createElement('div',{style:S.main},
-      view==='home'&&React.createElement(HomeView,{special,gallery,go}),
-      view==='menu'&&React.createElement(MenuView,{menu}),
-      view==='gallery'&&React.createElement(GalleryView,{gallery}),
+      view==='home'&&React.createElement(HomeView,{special,go}),
+      view==='gerechten'&&React.createElement(MenuView,{data:dishes,title:'Onze gerechten'}),
+      view==='dranken'&&React.createElement(MenuView,{data:drinks,title:'Onze dranken'}),
       view==='contact'&&React.createElement(ContactView,null),
-      view==='admin'&&React.createElement(AdminView,{isAdmin,setIsAdmin,adv,setAdv,menu,upMenu,special,upSpecial,gallery,upGallery})
+      view==='admin'&&React.createElement(AdminView,{isAdmin,setIsAdmin,adv,setAdv,dishes,upDishes,drinks,upDrinks,special,upSpecial})
     ),
     // FOOTER
     React.createElement('footer',{style:S.footer},
@@ -152,16 +305,16 @@ function App(){
 }
 
 // ─── Home ─────────────────────────────────────────────────────────────────────
-function HomeView({special,gallery,go}){
+function HomeView({special,go}){
   return React.createElement('div',{style:{background:'rgba(26,14,0,0.55)',borderRadius:20,padding:'1.25rem',backdropFilter:'blur(2px)'}},
     // Hero
     React.createElement('div',{style:S.hero},
       React.createElement('p',{style:S.heroLabel},'Welkom bij'),
       React.createElement('h1',{style:S.heroTitle},'Bistro Likert'),
-      React.createElement('p',{style:S.heroPara},'Bistro Likert heeft als doel een plek in Likert (Liedekerke) te creëren waar u terecht kan voor een gewone hap en een drankje in een fijn kader.\nNeem alvast een kijkje op onze kaart en wij hopen u snel te mogen begroeten.\nTot gauw ,\Didier, Alain en het Bistro Likert Team'),
+      React.createElement('p',{style:S.heroPara},'Een warm, huiselijk bistro in het hart van Liedekerke.\nVerse, seizoensgebonden keuken met een Belgisch karakter.'),
       React.createElement('div',{style:{display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap'}},
-        React.createElement('button',{style:{...S.btn('p'),padding:'9px 22px',fontSize:14},onClick:()=>go('menu')},'Bekijk ons menu'),
-        React.createElement('button',{style:{...S.btn(),padding:'9px 22px',fontSize:14,border:'1px solid #3a2d1e',color:'#c8b49a',background:'none'},onClick:()=>go('contact')},'Reserveren 📞 ')
+        React.createElement('button',{style:{...S.btn('p'),padding:'9px 22px',fontSize:14},onClick:()=>go('gerechten')},'Bekijk onze gerechten'),
+        React.createElement('button',{style:{...S.btn(),padding:'9px 22px',fontSize:14,border:'1px solid #3a2d1e',color:'#c8b49a',background:'none'},onClick:()=>go('dranken')},'Bekijk onze dranken')
       )
     ),
     // Suggestie
@@ -177,49 +330,26 @@ function HomeView({special,gallery,go}){
           )
         )
       )
-    ),
-    // Gallery preview
-    gallery.length>0&&React.createElement('div',null,
-      React.createElement('h2',{style:{fontSize:18,fontWeight:500,marginBottom:'1rem'}},"Onze bistro"),
-      React.createElement('div',{style:S.grid},
-        gallery.slice(0,4).map(p=>React.createElement('img',{key:p.id,src:p.photo,alt:p.caption||'Bistro Likert',style:S.photo}))
-      ),
-      gallery.length>4&&React.createElement('button',{style:{...S.btn(),marginTop:10,fontSize:13},onClick:()=>go('gallery')},"Alle foto's bekijken →")
     )
   );
 }
 
-// ─── Menu ─────────────────────────────────────────────────────────────────────
-function MenuView({menu}){
-  return React.createElement('div',null,
-    React.createElement('h1',{style:{fontSize:24,fontWeight:500,marginBottom:'0.5rem'}},'Ons menu'),
-    React.createElement('p',{style:{color:'var(--text-secondary)',fontSize:13,marginBottom:'1.5rem'}},'Alle prijzen zijn inclusief BTW. Vraag ons personeel naar allergeneninformatie.'),
-    ...menu.map(cat=>React.createElement('div',{key:cat.id,style:{...S.card,marginBottom:'1.25rem'}},
+// ─── Menu (gebruikt voor zowel Gerechten als Dranken) ──────────────────────────
+function MenuView({data,title}){
+  return React.createElement('div',{style:{background:'rgba(0,0,0,0.75)',borderRadius:20,padding:'1.5rem'}},
+    React.createElement('h1',{style:{fontSize:24,fontWeight:500,marginBottom:'0.5rem',color:'#f5e6c8'}},title),
+    React.createElement('p',{style:{color:'#d3c3ad',fontSize:13,marginBottom:'1.5rem'}},'Alle prijzen zijn inclusief BTW. Vraag ons personeel naar allergeneninformatie.'),
+    ...data.map(cat=>React.createElement('div',{key:cat.id,style:{...S.card,marginBottom:'1.25rem',background:'rgba(255,255,255,0.25)'}},
       React.createElement('p',{style:S.catTitle},cat.category),
-      ...cat.items.map((item,i)=>React.createElement('div',{key:item.id,style:{...S.menuRow,borderBottom:i===cat.items.length-1?'none':'0.5px solid var(--border)'}},
+      cat.note&&React.createElement('p',{style:S.catNote},cat.note),
+      ...cat.items.map((item,i)=>React.createElement('div',{key:item.id,style:{...S.menuRow,borderBottom:i===cat.items.length-1?'none':'0.5px solid rgba(255,255,255,0.12)'}},
         React.createElement('div',{style:{flex:1}},
-          React.createElement('p',{style:{margin:0,fontWeight:500,fontSize:14}},item.name),
-          item.description&&React.createElement('p',{style:{margin:'2px 0 0',fontSize:12,color:'var(--text-secondary)'}},item.description)
+          React.createElement('p',{style:{margin:0,fontWeight:500,fontSize:14,color:'#f5e6c8'}},item.name),
+          item.description&&React.createElement('p',{style:{margin:'2px 0 0',fontSize:12,color:'#d3c3ad'}},item.description)
         ),
         React.createElement('span',{style:S.menuPrice},eur(item.price))
       ))
     ))
-  );
-}
-
-// ─── Gallery ──────────────────────────────────────────────────────────────────
-function GalleryView({gallery}){
-  return React.createElement('div',null,
-    React.createElement('h1',{style:{fontSize:24,fontWeight:500,marginBottom:'0.5rem'}},"Foto's"),
-    React.createElement('p',{style:{color:'var(--text-secondary)',fontSize:13,marginBottom:'1.5rem'}},'Een blik in onze bistro.'),
-    gallery.length===0
-      ?React.createElement('div',{style:{...S.card,textAlign:'center',padding:'3rem',color:'var(--text-muted)'}},'Nog geen foto\'s toegevoegd door de eigenaar.')
-      :React.createElement('div',{style:S.grid},
-        ...gallery.map(p=>React.createElement('div',{key:p.id},
-          React.createElement('img',{src:p.photo,alt:p.caption||'Bistro Likert',style:S.photo}),
-          p.caption&&React.createElement('p',{style:{fontSize:12,color:'var(--text-muted)',marginTop:4}},p.caption)
-        ))
-      )
   );
 }
 
@@ -250,9 +380,9 @@ function ContactView(){
 }
 
 // ─── Admin ────────────────────────────────────────────────────────────────────
-function AdminView({isAdmin,setIsAdmin,adv,setAdv,menu,upMenu,special,upSpecial,gallery,upGallery}){
+function AdminView({isAdmin,setIsAdmin,adv,setAdv,dishes,upDishes,drinks,upDrinks,special,upSpecial}){
   if(!isAdmin)return React.createElement(AdminLogin,{setIsAdmin});
-  const tabs=[['special','⭐ Suggestie'],['menu','📋 Menu'],['gallery','🖼 Foto\'s']];
+  const tabs=[['special','⭐ Suggestie'],['gerechten','🍽 Gerechten'],['dranken','🍷 Dranken']];
   return React.createElement('div',null,
     React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.5rem'}},
       React.createElement('h1',{style:{fontSize:22,fontWeight:500}},'Beheer'),
@@ -265,8 +395,8 @@ function AdminView({isAdmin,setIsAdmin,adv,setAdv,menu,upMenu,special,upSpecial,
       ),
       React.createElement('div',{style:{flex:1}},
         adv==='special'&&React.createElement(AdminSpecial,{special,upSpecial}),
-        adv==='menu'&&React.createElement(AdminMenu,{menu,upMenu}),
-        adv==='gallery'&&React.createElement(AdminGallery,{gallery,upGallery})
+        adv==='gerechten'&&React.createElement(AdminMenu,{data:dishes,upData:upDishes,label:'gerecht'}),
+        adv==='dranken'&&React.createElement(AdminMenu,{data:drinks,upData:upDrinks,label:'drank'})
       )
     )
   );
@@ -348,52 +478,62 @@ function AdminSpecial({special,upSpecial}){
   );
 }
 
-// ─── Admin Menu ───────────────────────────────────────────────────────────────
-function AdminMenu({menu,upMenu}){
+// ─── Admin Menu (herbruikt voor Gerechten en Dranken) ──────────────────────────
+function AdminMenu({data,upData,label}){
   const [editing,setEditing]=useState(null);
   const [editForm,setEditForm]=useState({});
   const [saved,setSaved]=useState(false);
   const [newCat,setNewCat]=useState('');
   const setEF=(k,v)=>setEditForm(f=>({...f,[k]:v}));
 
-  const notify=async m=>{await upMenu(m);setSaved(true);setTimeout(()=>setSaved(false),2000)};
+  const notify=async m=>{await upData(m);setSaved(true);setTimeout(()=>setSaved(false),2000)};
   const startEdit=(catId,item)=>{setEditing(`${catId}|${item.id}`);setEditForm({...item})};
   const cancelEdit=()=>{setEditing(null);setEditForm({})};
   const saveEdit=async(catId)=>{
-    const m=menu.map(c=>c.id!==catId?c:{...c,items:c.items.map(i=>i.id===editForm.id?{...editForm,price:parseFloat(editForm.price)||0}:i)});
+    const m=data.map(c=>c.id!==catId?c:{...c,items:c.items.map(i=>i.id===editForm.id?{...editForm,price:parseFloat(editForm.price)||0}:i)});
     await notify(m);cancelEdit();
   };
   const addItem=async catId=>{
-    const m=menu.map(c=>c.id!==catId?c:{...c,items:[...c.items,{id:uid(),name:'Nieuw gerecht',description:'',price:10}]});
+    const m=data.map(c=>c.id!==catId?c:{...c,items:[...c.items,{id:uid(),name:'Nieuw item',description:'',price:5}]});
     await notify(m);
   };
   const delItem=async(catId,iid)=>{
-    const m=menu.map(c=>c.id!==catId?c:{...c,items:c.items.filter(i=>i.id!==iid)});
+    const m=data.map(c=>c.id!==catId?c:{...c,items:c.items.filter(i=>i.id!==iid)});
+    await notify(m);
+  };
+  const setCatNote=async(catId,note)=>{
+    const m=data.map(c=>c.id!==catId?c:{...c,note});
     await notify(m);
   };
   const addCat=async()=>{
     if(!newCat.trim())return;
-    await notify([...menu,{id:uid(),category:newCat.trim(),items:[]}]);
+    await notify([...data,{id:uid(),category:newCat.trim(),items:[]}]);
     setNewCat('');
   };
   const delCat=async catId=>{
-    if(!window.confirm('Categorie en alle gerechten verwijderen?'))return;
-    await notify(menu.filter(c=>c.id!==catId));
+    if(!window.confirm('Categorie en alle items verwijderen?'))return;
+    await notify(data.filter(c=>c.id!==catId));
   };
 
   return React.createElement('div',null,
     React.createElement('div',{style:{display:'flex',alignItems:'center',gap:10,marginBottom:'1.25rem'}},
-      React.createElement('h2',{style:{fontSize:16,fontWeight:500}},'Menu beheren'),
+      React.createElement('h2',{style:{fontSize:16,fontWeight:500}},label==='drank'?'Dranken beheren':'Gerechten beheren'),
       saved&&React.createElement('span',{style:{color:'#27ae60',fontSize:13}},'✓ Opgeslagen')
     ),
-    ...menu.map(cat=>React.createElement('div',{key:cat.id,style:S.card},
-      React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'0.75rem'}},
+    ...data.map(cat=>React.createElement('div',{key:cat.id,style:S.card},
+      React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'0.5rem'}},
         React.createElement('span',{style:{fontWeight:500,fontSize:14}},cat.category),
         React.createElement('div',{style:{display:'flex',gap:6}},
-          React.createElement('button',{style:{...S.btn(),padding:'4px 10px',fontSize:12},onClick:()=>addItem(cat.id)},'+ Gerecht'),
+          React.createElement('button',{style:{...S.btn(),padding:'4px 10px',fontSize:12},onClick:()=>addItem(cat.id)},`+ ${label==='drank'?'Drank':'Gerecht'}`),
           React.createElement('button',{style:{...S.btn('d2'),padding:'4px 8px',fontSize:12},onClick:()=>delCat(cat.id)},'✕')
         )
       ),
+      React.createElement('input',{
+        style:{...S.inp,fontSize:12,marginBottom:10,fontStyle:'italic'},
+        value:cat.note||'',
+        placeholder:'Opmerking bij categorie (optioneel)',
+        onChange:e=>setCatNote(cat.id,e.target.value)
+      }),
       ...cat.items.map(item=>{
         const key=`${cat.id}|${item.id}`;
         const isEditing=editing===key;
@@ -422,69 +562,12 @@ function AdminMenu({menu,upMenu}){
           )
         );
       }),
-      cat.items.length===0&&React.createElement('p',{style:{color:'var(--text-muted)',fontSize:13,textAlign:'center',padding:'0.5rem 0'}},'Geen gerechten — klik op "+ Gerecht" om toe te voegen.')
+      cat.items.length===0&&React.createElement('p',{style:{color:'var(--text-muted)',fontSize:13,textAlign:'center',padding:'0.5rem 0'}},`Geen items — klik op "+ ${label==='drank'?'Drank':'Gerecht'}" om toe te voegen.`)
     )),
     React.createElement('div',{style:{...S.card,display:'flex',gap:8,alignItems:'center'}},
-      React.createElement('input',{style:{...S.inp,flex:1},value:newCat,onChange:e=>setNewCat(e.target.value),onKeyDown:e=>e.key==='Enter'&&addCat(),placeholder:'Nieuwe categorie (bijv. Salades, Vis)'}),
+      React.createElement('input',{style:{...S.inp,flex:1},value:newCat,onChange:e=>setNewCat(e.target.value),onKeyDown:e=>e.key==='Enter'&&addCat(),placeholder:label==='drank'?'Nieuwe categorie (bijv. Cocktails)':'Nieuwe categorie (bijv. Soepen)'}),
       React.createElement('button',{style:{...S.btn('p'),flexShrink:0},onClick:addCat},'+ Categorie')
     )
-  );
-}
-
-// ─── Admin Gallery ────────────────────────────────────────────────────────────
-function AdminGallery({gallery,upGallery}){
-  const [caption,setCaption]=useState('');
-  const [uploading,setUploading]=useState(false);
-  const [saved,setSaved]=useState('');
-  const fileRef=useRef();
-
-  const addPhoto=async e=>{
-    const f=e.target.files[0];if(!f)return;
-    setUploading(true);
-    try{
-      const b=await toB64(f);
-      const g=[...gallery,{id:uid(),photo:b,caption:caption.trim()}];
-      await upGallery(g);
-      setCaption('');setSaved('Foto toegevoegd!');
-      setTimeout(()=>setSaved(''),2500);
-      if(fileRef.current)fileRef.current.value='';
-    }catch(e){setSaved('Fout: foto te groot?')}
-    setUploading(false);
-  };
-  const del=async id=>{await upGallery(gallery.filter(p=>p.id!==id))};
-
-  return React.createElement('div',null,
-    React.createElement('div',{style:S.card},
-      React.createElement('h2',{style:{fontSize:16,fontWeight:500,marginBottom:'1.25rem'}},"Foto's beheren"),
-      React.createElement('div',{style:{display:'grid',gap:10}},
-        React.createElement('div',null,
-          React.createElement('label',{style:S.lbl},'Bijschrift (optioneel)'),
-          React.createElement('input',{style:S.inp,value:caption,onChange:e=>setCaption(e.target.value),placeholder:'Bijv. Ons terras in de zomer'})
-        ),
-        React.createElement('div',null,
-          React.createElement('label',{style:S.lbl},'Foto selecteren'),
-          React.createElement('input',{ref:fileRef,type:'file',accept:'image/*',onChange:addPhoto,style:{fontSize:13},disabled:uploading})
-        ),
-        uploading&&React.createElement('p',{style:{color:'var(--text-muted)',fontSize:13}},'Foto uploaden…'),
-        saved&&React.createElement('p',{style:{color:'#27ae60',fontSize:13}},saved)
-      )
-    ),
-    gallery.length===0
-      ?React.createElement('div',{style:{...S.card,textAlign:'center',padding:'2rem',color:'var(--text-muted)'}},
-          "Nog geen foto's — voeg hierboven een foto toe.")
-      :React.createElement('div',{style:{marginTop:'1rem'}},
-          React.createElement('p',{style:{fontSize:12,color:'var(--text-muted)',marginBottom:10}},`${gallery.length} foto${gallery.length!==1?'\'s':''} in de galerij`),
-          React.createElement('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:8}},
-            ...gallery.map(p=>React.createElement('div',{key:p.id,style:{position:'relative'}},
-              React.createElement('img',{src:p.photo,alt:p.caption||'',style:{...S.photo,height:100}}),
-              p.caption&&React.createElement('p',{style:{fontSize:11,color:'var(--text-muted)',marginTop:3}},p.caption),
-              React.createElement('button',{
-                style:{position:'absolute',top:4,right:4,background:'rgba(0,0,0,0.6)',border:'none',color:'#fff',borderRadius:4,padding:'2px 6px',fontSize:11,cursor:'pointer'},
-                onClick:()=>del(p.id)
-              },'✕')
-            ))
-          )
-        )
   );
 }
 
