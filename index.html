@@ -227,11 +227,11 @@ const S={
   specialTitle:{fontFamily:'Georgia,serif',color:'#f5e6c8',fontSize:24,fontWeight:400,margin:'0 0 0.6rem'},
   specialDesc:{color:'#b8a090',fontSize:14,lineHeight:1.65,margin:'0 0 0.9rem'},
   specialPrice:{color:A,fontSize:20,fontWeight:500},
-  catTitle:{fontSize:12,fontWeight:500,color:A,letterSpacing:'0.08em',textTransform:'uppercase',borderBottom:`1px solid ${AL}`,paddingBottom:'0.5rem',marginBottom:'0.4rem'},
-  catNote:{fontSize:12,color:'var(--text-muted)',fontStyle:'italic',margin:'0 0 0.8rem'},
-  menuRow:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'0.65rem 0',borderBottom:'0.5px solid var(--border)'},
-  menuPrice:{color:A,fontWeight:500,whiteSpace:'nowrap',marginLeft:14,fontSize:14,flexShrink:0},
-  card:{background:'var(--surface-2)',border:'0.5px solid var(--border)',borderRadius:12,padding:'1.25rem',marginBottom:'1rem'},
+  catTitle:{fontSize:12,fontWeight:500,color:A,letterSpacing:'0.08em',textTransform:'uppercase',borderBottom:`1px solid rgba(253,243,224,0.35)`,paddingBottom:'0.5rem',marginBottom:'0.4rem'},
+  catNote:{fontSize:12,color:'#d3c3ad',fontStyle:'italic',margin:'0 0 0.8rem'},
+  menuRow:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'0.75rem 0',borderBottom:'0.5px solid rgba(255,255,255,0.14)'},
+  menuPrice:{color:'#f5e6c8',fontWeight:600,whiteSpace:'nowrap',marginLeft:14,fontSize:14,flexShrink:0},
+  card:{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:14,padding:'1.25rem',marginBottom:'1rem',backdropFilter:'blur(2px)'},
   grid:{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))',gap:10},
   photo:{width:'100%',aspectRatio:'4/3',objectFit:'cover',borderRadius:8,display:'block'},
   inp:{width:'100%',padding:'7px 11px',borderRadius:7,border:'0.5px solid var(--border-strong)',background:'var(--surface-1)',color:'var(--text-primary)',fontSize:14},
@@ -334,18 +334,18 @@ function HomeView({special,go}){
 
 // ─── Menu (gebruikt voor zowel Gerechten als Dranken) ──────────────────────────
 function MenuView({data,title}){
-  return React.createElement('div',{style:{background:'rgba(0,0,0,0.75)',borderRadius:20,padding:'1.5rem'}},
-    React.createElement('h1',{style:{fontSize:24,fontWeight:500,marginBottom:'0.5rem',color:'#f5e6c8'}},title),
-    React.createElement('p',{style:{color:'#d3c3ad',fontSize:13,marginBottom:'1.5rem'}},'Alle prijzen zijn inclusief BTW. Vraag ons personeel naar allergeneninformatie.'),
-    ...data.map(cat=>React.createElement('div',{key:cat.id,style:{...S.card,marginBottom:'1.25rem',background:'rgba(255,255,255,0.25)'}},
+  return React.createElement('div',{style:{background:'rgba(0,0,0,0.78)',borderRadius:20,padding:'1.75rem',boxShadow:'0 24px 80px rgba(0,0,0,0.35)'}},
+    React.createElement('h1',{style:{fontSize:26,fontWeight:500,marginBottom:'0.75rem',color:'#f5e6c8',letterSpacing:'-0.02em'}},title),
+    React.createElement('p',{style:{color:'#d7c8ad',fontSize:14,marginBottom:'1.75rem',lineHeight:1.7}},'Alle prijzen zijn inclusief BTW. Vraag ons personeel naar allergeneninformatie.'),
+    ...data.map(cat=>React.createElement('div',{key:cat.id,style:{...S.card,marginBottom:'1.25rem',background:'rgba(255,255,255,0.16)'}},
       React.createElement('p',{style:S.catTitle},cat.category),
       cat.note&&React.createElement('p',{style:S.catNote},cat.note),
-      ...cat.items.map((item,i)=>React.createElement('div',{key:item.id,style:{...S.menuRow,borderBottom:i===cat.items.length-1?'none':'0.5px solid rgba(255,255,255,0.12)'}},
-        React.createElement('div',{style:{flex:1}},
-          React.createElement('p',{style:{margin:0,fontWeight:500,fontSize:14,color:'#f5e6c8'}},item.name),
-          item.description&&React.createElement('p',{style:{margin:'2px 0 0',fontSize:12,color:'#d3c3ad'}},item.description)
+      ...cat.items.map((item,i)=>React.createElement('div',{key:item.id,style:{...S.menuRow,borderBottom:i===cat.items.length-1?'none':'0.5px solid rgba(255,255,255,0.18)',alignItems:'center'}},
+        React.createElement('div',{style:{flex:1,minWidth:0}},
+          React.createElement('p',{style:{margin:0,fontWeight:600,fontSize:15,color:'#f5e6c8',letterSpacing:'-0.01em'}},item.name),
+          item.description&&React.createElement('p',{style:{margin:'4px 0 0',fontSize:13,color:'#d3c3ad',lineHeight:1.6}},item.description)
         ),
-        React.createElement('span',{style:S.menuPrice},eur(item.price))
+        React.createElement('span',{style:{...S.menuPrice,fontSize:15,color:'#f8dfb1'}},eur(item.price))
       ))
     ))
   );
