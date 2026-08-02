@@ -1,0 +1,284 @@
+{
+  "specials": [
+    {
+      "id": "s1",
+      "title": "Salade van noorse vis",
+      "description": "Heerlijk verse Noorse vis, gecombineerd met een smaakvolle, frisse salade.",
+      "price": 32.5,
+      "photo": "images/voorbeeld_suggestie.png"
+    }
+  ],
+  "dishes": [
+    {
+      "id": "d1",
+      "category": "Lunch",
+      "note": "Elke donderdag, vrijdag en zaterdagmiddag",
+      "items": [
+        { "id": "d1i1", "name": "Steak friet met salade", "description": "Champignon- of pepersaus", "price": 19.5 }
+      ]
+    },
+    {
+      "id": "d2",
+      "category": "In afwachting",
+      "items": [
+        { "id": "d2i1", "name": "Bitterballen of mini loempia", "description": "8 stuks € 11 · 12 stuks € 15,50", "price": 11 },
+        { "id": "d2i2", "name": "Mixed apero hapjes (warm)", "description": "8 stuks € 11 · 16 stuks € 16,50", "price": 11 }
+      ]
+    },
+    {
+      "id": "d3",
+      "category": "Voorgerechten",
+      "items": [
+        { "id": "d3i1", "name": "Ambachtelijke kaaskroket", "description": "1 stuk", "price": 14 },
+        { "id": "d3i2", "name": "Iberico kroket", "description": "", "price": 15 },
+        { "id": "d3i3", "name": "Ambachtelijke garnaalkroket", "description": "1 stuk", "price": 16 },
+        { "id": "d3i4", "name": "Scampi lookboter / Diabolique / Thaise curry", "description": "6 stuks", "price": 18 }
+      ]
+    },
+    {
+      "id": "d4",
+      "category": "Pastagerechten",
+      "items": [
+        { "id": "d4i1", "name": "Spaghetti (klein)", "description": "", "price": 14 },
+        { "id": "d4i2", "name": "Spaghetti (groot)", "description": "", "price": 16 },
+        { "id": "d4i3", "name": "Scampi Thaise curry / Diabolique", "description": "", "price": 26 }
+      ]
+    },
+    {
+      "id": "d5",
+      "category": "Salades en koude gerechten",
+      "items": [
+        { "id": "d5i1", "name": "Salade Burrata", "description": "", "price": 22 },
+        { "id": "d5i2", "name": "Salade Geitenkaas", "description": "", "price": 24 },
+        { "id": "d5i3", "name": "Salade Gerookte Zalm", "description": "", "price": 24 },
+        { "id": "d5i4", "name": "Scampi Salade", "description": "", "price": 24 }
+      ]
+    },
+    {
+      "id": "d6",
+      "category": "Ambachtelijke kroketten met brood en salade",
+      "items": [
+        { "id": "d6i1", "name": "2 Kaaskroketten (oude Brugse)", "description": "", "price": 20 },
+        { "id": "d6i2", "name": "2 Garnaalkroketten", "description": "", "price": 24 },
+        { "id": "d6i3", "name": "Duo kaas- en garnaalkroket", "description": "", "price": 22 },
+        { "id": "d6i4", "name": "2 Ibericohamkroketten", "description": "", "price": 22 }
+      ]
+    },
+    {
+      "id": "d7",
+      "category": "Croques",
+      "note": "Niet verkrijgbaar op zaterdag, zondag en feestdagen",
+      "items": [
+        { "id": "d7i1", "name": "Croque monsieur", "description": "", "price": 14 },
+        { "id": "d7i2", "name": "Croque bolognaise", "description": "", "price": 16 },
+        { "id": "d7i3", "name": "Croque hawaï", "description": "", "price": 15 }
+      ]
+    },
+    {
+      "id": "d8",
+      "category": "Vleesgerechten",
+      "note": "Keuze uit frietjes of kroketten · Sauzen champignon-/pepersaus € 5,50 · Bearnaisesaus € 6",
+      "items": [
+        { "id": "d8i1", "name": "Vol-au-vent", "description": "Met vidé, supplement € 2", "price": 27 },
+        { "id": "d8i2", "name": "Varkenswangen Leffe", "description": "", "price": 28 },
+        { "id": "d8i3", "name": "Brochette van kalkoen natuur", "description": "", "price": 28 },
+        { "id": "d8i4", "name": "Steak tartare (américain)", "description": "Vers gemalen", "price": 29 },
+        { "id": "d8i5", "name": "Crunchy kipburger", "description": "", "price": 29 },
+        { "id": "d8i6", "name": "Steak 300 g", "description": "", "price": 29 },
+        { "id": "d8i7", "name": "Filet mignon 350 g natuur", "description": "", "price": 34 },
+        { "id": "d8i8", "name": "Entrecôte wit-blauw 350 g", "description": "", "price": 32 }
+      ]
+    },
+    {
+      "id": "d9",
+      "category": "Visgerechten",
+      "note": "Keuze uit frietjes of kroketten",
+      "items": [
+        { "id": "d9i1", "name": "Scampi lookboter / Diabolique / Thaise curry", "description": "10 stuks", "price": 28 },
+        { "id": "d9i2", "name": "Golden Shrimpburger", "description": "Met garnaal", "price": 30 },
+        { "id": "d9i3", "name": "Tongrolletjes witte wijnsaus", "description": "", "price": 31 },
+        { "id": "d9i4", "name": "Kabeljauwhaasje van het huis", "description": "", "price": 36 }
+      ]
+    },
+    {
+      "id": "d10",
+      "category": "Kindergerechten",
+      "note": "Enkel voor -12 jaar",
+      "items": [
+        { "id": "d10i1", "name": "Spaghetti", "description": "", "price": 13 },
+        { "id": "d10i2", "name": "Kipkrokantje met appelmoes en frietjes", "description": "", "price": 15 },
+        { "id": "d10i3", "name": "2 Fricandellen met frietjes", "description": "", "price": 14 },
+        { "id": "d10i4", "name": "Vol-au-vent kids", "description": "", "price": 14 }
+      ]
+    },
+    {
+      "id": "d11",
+      "category": "Desserts en warme appeltaart",
+      "items": [
+        { "id": "d11i1", "name": "Warme appeltaart", "description": "", "price": 9 },
+        { "id": "d11i2", "name": "Warme appeltaart met ijs", "description": "", "price": 13 },
+        { "id": "d11i3", "name": "Crème brûlée", "description": "", "price": 9 },
+        { "id": "d11i4", "name": "Tiramisu", "description": "", "price": 9.5 },
+        { "id": "d11i5", "name": "Moelleux van chocolade met vanille-ijs", "description": "", "price": 13 }
+      ]
+    },
+    {
+      "id": "d12",
+      "category": "Onze ijsjes 'Potje Kaat'",
+      "items": [
+        { "id": "d12i1", "name": "1 bol", "description": "Vanille, mokka of chocolade", "price": 4 },
+        { "id": "d12i2", "name": "Coupe 3 bollen", "description": "Vanille, mokka of chocolade", "price": 11 },
+        { "id": "d12i3", "name": "Kinderijsje", "description": "", "price": 8 },
+        { "id": "d12i4", "name": "IJskoffie", "description": "2 bollen", "price": 11 },
+        { "id": "d12i5", "name": "Dame Blanche", "description": "", "price": 12 },
+        { "id": "d12i6", "name": "Dame Noire", "description": "Chocolade-ijs met warme chocolade", "price": 12 },
+        { "id": "d12i7", "name": "Coupe Brésilienne", "description": "", "price": 11 },
+        { "id": "d12i8", "name": "Coupe Advocaat", "description": "", "price": 13 },
+        { "id": "d12i9", "name": "Coupe Bistro Likert", "description": "Vanille-ijs, speculooscrumble, Baileys", "price": 13 }
+      ]
+    }
+  ],
+  "drinks": [
+    {
+      "id": "r1",
+      "category": "Frisdranken",
+      "items": [
+        { "id": "r1i1", "name": "Plat/bruisend water Chaudfontaine", "description": "", "price": 3 },
+        { "id": "r1i2", "name": "Coca-Cola / Zero", "description": "", "price": 3 },
+        { "id": "r1i3", "name": "Jus d'orange / pompelmoes / appelsap", "description": "", "price": 3 },
+        { "id": "r1i4", "name": "Fanta / Sprite / Fuze Tea / Tonic / Agrumes / Bitter Lemon", "description": "", "price": 3 },
+        { "id": "r1i5", "name": "Gerolsteiner Orange / Citroen", "description": "Suikervrij", "price": 3 },
+        { "id": "r1i6", "name": "Tönissteiner Vruchtenkorf", "description": "Suikervrij", "price": 3 },
+        { "id": "r1i7", "name": "Cécémel", "description": "", "price": 3 }
+      ]
+    },
+    {
+      "id": "r2",
+      "category": "Streekbieren",
+      "items": [
+        { "id": "r2i1", "name": "Witkap", "description": "", "price": 5 },
+        { "id": "r2i2", "name": "Affligem Blond", "description": "", "price": 5.5 }
+      ]
+    },
+    {
+      "id": "r3",
+      "category": "Trappistenbier",
+      "items": [
+        { "id": "r3i1", "name": "Westmalle Blond / Donker", "description": "", "price": 5.5 },
+        { "id": "r3i2", "name": "Rochefort 10°", "description": "", "price": 6.5 }
+      ]
+    },
+    {
+      "id": "r4",
+      "category": "Bieren op fles",
+      "items": [
+        { "id": "r4i1", "name": "Jupiler", "description": "", "price": 3 },
+        { "id": "r4i2", "name": "Carlsberg", "description": "", "price": 4.5 },
+        { "id": "r4i3", "name": "Vedett", "description": "", "price": 4.5 },
+        { "id": "r4i4", "name": "Kriek Lindemans", "description": "", "price": 5 },
+        { "id": "r4i5", "name": "Leffe Blond / Donker / Kasteelbier Rood", "description": "", "price": 5.8 },
+        { "id": "r4i6", "name": "Omer / Cornet / Brugse Zot / Duvel / Karmeliet", "description": "", "price": 5.8 },
+        { "id": "r4i7", "name": "Geuze Boon 37,5cl", "description": "", "price": 6.5 }
+      ]
+    },
+    {
+      "id": "r5",
+      "category": "Bieren op fles (alcoholvrij)",
+      "items": [
+        { "id": "r5i1", "name": "Jupiler 0.0", "description": "", "price": 3 },
+        { "id": "r5i2", "name": "Carlsberg 0.0", "description": "", "price": 4.5 },
+        { "id": "r5i3", "name": "Kriek Lindemans 0.0", "description": "", "price": 5 },
+        { "id": "r5i4", "name": "Cornet 0.0", "description": "", "price": 5 }
+      ]
+    },
+    {
+      "id": "r6",
+      "category": "Huiswijn",
+      "items": [
+        { "id": "r6i1", "name": "Glas", "description": "Wit, rosé of rood", "price": 5.8 },
+        { "id": "r6i2", "name": "1/4 Karaf", "description": "Wit, rosé of rood", "price": 11 },
+        { "id": "r6i3", "name": "1/2 Karaf", "description": "Wit, rosé of rood", "price": 19 },
+        { "id": "r6i4", "name": "Fles", "description": "Wit, rosé of rood", "price": 25 }
+      ]
+    },
+    {
+      "id": "r7",
+      "category": "Aperitieven",
+      "note": "Supplement softdrink (cola/cola zero/tonic/orange) € 3",
+      "items": [
+        { "id": "r7i1", "name": "Sherry Dry / Pineau des Charentes", "description": "", "price": 6 },
+        { "id": "r7i2", "name": "Porto wit / rood", "description": "", "price": 6 },
+        { "id": "r7i3", "name": "Kir", "description": "", "price": 6.5 },
+        { "id": "r7i4", "name": "Cava", "description": "Glas", "price": 8 },
+        { "id": "r7i5", "name": "Martini wit / rood / rosato", "description": "", "price": 8 },
+        { "id": "r7i6", "name": "Funny alcoholvrij", "description": "Bitter of zoet", "price": 9 },
+        { "id": "r7i7", "name": "Campari / Passoã / Safari / Ricard", "description": "", "price": 9 },
+        { "id": "r7i8", "name": "Picon witte wijn", "description": "", "price": 9 },
+        { "id": "r7i9", "name": "Kir Royal", "description": "", "price": 9 },
+        { "id": "r7i10", "name": "Cocktail Bistro", "description": "Excl. jus d'orange of pompelmoes", "price": 9.5 },
+        { "id": "r7i11", "name": "Martini Royal", "description": "Wit of rosato", "price": 9.5 },
+        { "id": "r7i12", "name": "Aperol Spritz", "description": "", "price": 10 }
+      ]
+    },
+    {
+      "id": "r8",
+      "category": "Gin's",
+      "note": "Supplement tonic € 3 · Fever-Tree € 4",
+      "items": [
+        { "id": "r8i1", "name": "Bistro Gin", "description": "", "price": 11 },
+        { "id": "r8i2", "name": "Gordon's", "description": "", "price": 9 },
+        { "id": "r8i3", "name": "Hendrick's", "description": "", "price": 10 },
+        { "id": "r8i4", "name": "Gin Mare", "description": "", "price": 11 },
+        { "id": "r8i5", "name": "Bulldog", "description": "", "price": 11 }
+      ]
+    },
+    {
+      "id": "r9",
+      "category": "Sterke dranken",
+      "note": "Supplement softdrink € 3",
+      "items": [
+        { "id": "r9i1", "name": "Vodka Eristoff Original", "description": "", "price": 9 },
+        { "id": "r9i2", "name": "Rhum Bacardi", "description": "", "price": 9 },
+        { "id": "r9i3", "name": "J&B Whisky", "description": "", "price": 9 },
+        { "id": "r9i4", "name": "Rhum Havana Club", "description": "", "price": 9.5 },
+        { "id": "r9i5", "name": "Jack Daniel's Whiskey", "description": "", "price": 9.5 },
+        { "id": "r9i6", "name": "Ballantine's Whisky", "description": "", "price": 9.5 }
+      ]
+    },
+    {
+      "id": "r10",
+      "category": "Digestieven",
+      "items": [
+        { "id": "r10i1", "name": "Limoncello", "description": "", "price": 8.5 },
+        { "id": "r10i2", "name": "Cointreau", "description": "", "price": 8.5 },
+        { "id": "r10i3", "name": "Amaretto", "description": "", "price": 8.5 },
+        { "id": "r10i4", "name": "Bailey's", "description": "", "price": 8.5 },
+        { "id": "r10i5", "name": "Advocaat", "description": "", "price": 9 },
+        { "id": "r10i6", "name": "Grand Marnier", "description": "", "price": 9 },
+        { "id": "r10i7", "name": "Cognac Courvoisier", "description": "", "price": 9 },
+        { "id": "r10i8", "name": "Calvados", "description": "", "price": 9 }
+      ]
+    },
+    {
+      "id": "r11",
+      "category": "Warme dranken",
+      "items": [
+        { "id": "r11i1", "name": "Koffie", "description": "", "price": 3 },
+        { "id": "r11i2", "name": "Koffie cafeïnevrij", "description": "", "price": 3 },
+        { "id": "r11i3", "name": "Thee", "description": "Natuur, citroen, munt, rozenbottel of kamille", "price": 3 },
+        { "id": "r11i4", "name": "Latte Macchiato", "description": "", "price": 3.5 },
+        { "id": "r11i5", "name": "Latte Macchiato gearomatiseerd", "description": "Vanille, hazelnoot of caramel", "price": 4.5 },
+        { "id": "r11i6", "name": "Cappuccino", "description": "Slagroom of melkschuim", "price": 3.5 },
+        { "id": "r11i7", "name": "Warme chocomelk", "description": "", "price": 3.5 },
+        { "id": "r11i8", "name": "Warme chocomelk met slagroom", "description": "", "price": 4 },
+        { "id": "r11i9", "name": "Hasseltse koffie", "description": "", "price": 9 },
+        { "id": "r11i10", "name": "Advocaat koffie", "description": "", "price": 9 },
+        { "id": "r11i11", "name": "Ierse koffie", "description": "Whisky", "price": 9 },
+        { "id": "r11i12", "name": "French koffie", "description": "Cognac of Grand Marnier", "price": 9 },
+        { "id": "r11i13", "name": "Italian koffie", "description": "Amaretto", "price": 9 },
+        { "id": "r11i14", "name": "Normandische koffie", "description": "", "price": 9 },
+        { "id": "r11i15", "name": "Koffie Bistro Likert", "description": "Bailey's", "price": 9 }
+      ]
+    }
+  ]
+}
