@@ -140,24 +140,52 @@
   }
 
   @media (max-width: 720px) {
-    .bl-nav-in {
-      height: 84px;
-    }
 
-    .bl-navlinks.mobile {
-      top: 84px;
-    }
-
-    .bl-logo {
-      font-size: 30px;
-    }
-
-    .bl-burger {
-      width: 52px;
-      height: 52px;
-      font-size: 24px;
-    }
+  /* Hogere navigatiebalk */
+  .bl-nav-in {
+    height: 96px;
+    padding: 0 22px;
   }
+
+  /* Groter logo */
+  .bl-logo {
+    font-size: 36px;
+  }
+
+  /* Grote hamburgerknop */
+  .bl-burger {
+    display: flex;
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    border-radius: 12px;
+  }
+
+  /* Desktopmenu verbergen */
+  .bl-navlinks.desktop {
+    display: none;
+  }
+
+  /* Mobiel menu */
+  .bl-navlinks.mobile {
+    top: 96px;
+    padding: 10px 18px 18px;
+  }
+
+  /* Grote menu-items */
+  .bl-navlinks.mobile .bl-nb {
+    font-size: 21px;
+    font-weight: 600;
+    padding: 20px 18px;
+    min-height: 68px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
+
+  .bl-navlinks.mobile .bl-nb:last-child {
+    margin-bottom: 0;
+  }
+}
 
   /* ── Layout helpers ───────────────────────────────────── */
   .bl-main { max-width: 1040px; margin: 0 auto; padding: 2.25rem 1.25rem 3rem; flex: 1 0 auto; width: 100%; }
