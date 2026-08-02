@@ -66,125 +66,155 @@
     * { animation: none !important; transition: none !important; }
   }
 
-  /* ── Nav ──────────────────────────────────────────────── */
-  .bl-nav {
-    background: rgba(20, 11, 4, 0.92);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--line);
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    flex-shrink: 0;
-  }
-  .bl-nav-in {
-    max-width: 1040px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1.25rem;
-    height: 64px;
-  }
-  .bl-logo {
-    font-family: var(--f-display);
-    font-style: italic;
-    font-weight: 500;
-    color: var(--tx-on-dark);
-    font-size: clamp(19px, 2.4vw, 22px);
-    letter-spacing: 0.01em;
-    cursor: pointer;
-    user-select: none;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-  .bl-logo .dot { color: var(--brass-light); font-style: normal; }
-  .bl-navlinks { display: flex; gap: 4px; }
-  .bl-navlinks.mobile {
-    display: none;
-    flex-direction: column;
-    gap: 2px;
-    position: absolute;
-    top: 64px; left: 0; right: 0;
-    background: var(--ink);
-    border-bottom: 1px solid var(--line);
-    padding: 0.75rem 1.25rem 1.1rem;
-  }
-  .bl-navlinks.mobile.open { display: flex; }
-  .bl-nb {
-    background: none;
-    border: none;
-    color: var(--tx-on-dark-faint);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 13.5px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    border-bottom: 2px solid transparent;
-    transition: color 0.15s ease;
-  }
-  .bl-nb.active { color: var(--tx-on-dark); border-bottom-color: var(--brass); }
-  .bl-navlinks.mobile .bl-nb { text-align: left; width: 100%; padding: 12px; border-bottom: 1px solid var(--line); border-radius: 0; }
-  .bl-navlinks.mobile .bl-nb.active { border-left: 3px solid var(--brass); background: rgba(227,193,127,0.06); }
+  /* ───────────────── NAVIGATIE ───────────────── */
 
-  .bl-burger {
-    display: none;
-    background: none;
-    border: 1px solid var(--line-strong);
-    border-radius: 8px;
-    width: 40px; height: 40px;
-    align-items: center;
-    justify-content: center;
-    color: var(--tx-on-dark);
-    font-size: 18px;
-  }
+.bl-nav{
+    background:rgba(20,11,4,.95);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
 
-  @media (max-width: 720px) {
+.bl-nav-in{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 24px;
+    height:72px;
+}
 
-  /* Hogere navigatiebalk */
-  .bl-nav-in {
-    height: 96px;
-    padding: 0 22px;
-  }
+.bl-logo{
+    font-family:var(--f-display);
+    font-style:italic;
+    font-weight:600;
+    font-size:26px;
+    color:var(--tx-on-dark);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+}
 
-  /* Groter logo */
-  .bl-logo {
-    font-size: 36px;
-  }
+.bl-logo .dot{
+    color:var(--brass-light);
+}
 
-  /* Grote hamburgerknop */
-  .bl-burger {
-    display: flex;
-    width: 60px;
-    height: 60px;
-    font-size: 30px;
-    border-radius: 12px;
-  }
+.bl-navlinks.desktop{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
 
-  /* Desktopmenu verbergen */
-  .bl-navlinks.desktop {
-    display: none;
-  }
+.bl-nb{
+    background:none;
+    border:none;
+    color:var(--tx-on-dark-muted);
+    padding:12px 18px;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:600;
+    transition:.2s;
+}
 
-  /* Mobiel menu */
-  .bl-navlinks.mobile {
-    top: 96px;
-    padding: 10px 18px 18px;
-  }
+.bl-nb:hover{
+    color:white;
+}
 
-  /* Grote menu-items */
-  .bl-navlinks.mobile .bl-nb {
-    font-size: 21px;
-    font-weight: 600;
-    padding: 20px 18px;
-    min-height: 68px;
-    border-radius: 10px;
-    margin-bottom: 6px;
-  }
+.bl-nb.active{
+    color:white;
+    background:rgba(227,193,127,.08);
+}
 
-  .bl-navlinks.mobile .bl-nb:last-child {
-    margin-bottom: 0;
-  }
+.bl-burger{
+    display:none;
+    width:54px;
+    height:54px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:none;
+    color:white;
+    font-size:28px;
+    justify-content:center;
+    align-items:center;
+}
+
+/* menu gsm */
+
+.bl-navlinks.mobile{
+    display:none;
+    flex-direction:column;
+    position:absolute;
+    left:0;
+    right:0;
+    top:72px;
+    background:rgba(20,11,4,.98);
+    padding:18px;
+    border-bottom:1px solid var(--line);
+}
+
+.bl-navlinks.mobile.open{
+    display:flex;
+}
+
+.bl-navlinks.mobile .bl-nb{
+    width:100%;
+    text-align:left;
+    font-size:20px;
+    padding:18px;
+    border-radius:12px;
+    margin-bottom:8px;
+}
+
+.bl-navlinks.mobile .bl-nb:last-child{
+    margin-bottom:0;
+}
+
+/* ---------------- GSM ---------------- */
+
+@media (max-width:720px){
+
+    .bl-nav-in{
+        height:92px;
+        padding:0 20px;
+    }
+
+    .bl-logo{
+        font-size:34px;
+    }
+
+    .bl-navlinks.desktop{
+        display:none;
+    }
+
+    .bl-burger{
+        display:flex;
+        width:60px;
+        height:60px;
+        font-size:30px;
+    }
+
+    .bl-navlinks.mobile{
+        top:92px;
+    }
+
+}
+
+/* ---------------- PC ---------------- */
+
+@media (min-width:721px){
+
+    .bl-navlinks.mobile{
+        display:none !important;
+    }
+
+    .bl-burger{
+        display:none !important;
+    }
+
 }
 
   /* ── Layout helpers ───────────────────────────────────── */
