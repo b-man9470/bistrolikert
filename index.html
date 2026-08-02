@@ -140,8 +140,23 @@
   }
 
   @media (max-width: 720px) {
-    .bl-navlinks.desktop { display: none; }
-    .bl-burger { display: flex; }
+    .bl-nav-in {
+      height: 84px;
+    }
+
+    .bl-navlinks.mobile {
+      top: 84px;
+    }
+
+    .bl-logo {
+      font-size: 30px;
+    }
+
+    .bl-burger {
+      width: 52px;
+      height: 52px;
+      font-size: 24px;
+    }
   }
 
   /* ── Layout helpers ───────────────────────────────────── */
@@ -601,7 +616,7 @@
       { day: 'Dinsdag', lines: ['Gesloten'] },
       { day: 'Woensdag', lines: ['17.30u tot 21u'] },
       { day: 'Donderdag en vrijdag', lines: ['12u tot 14u', '17.30u tot 21u'] },
-      { day: 'Zaterdag', lines: ['8u tot 14u', '17.30u tot 21u'] },
+      { day: 'Zaterdag', lines: ['8u tot 14u — tijdens de markt beperkte kaart van 12u tot 14u', '17.30u tot 21u'] },
       { day: 'Zondag', lines: ['12u tot 14u', '17.30u tot 21u'] },
     ];
     return h('div', { className: 'bl-panel' },
