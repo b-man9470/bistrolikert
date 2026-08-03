@@ -2,10 +2,10 @@
   "specials": [
     {
       "id": "s1",
-      "title": "Salade van noorse vis",
-      "description": "Heerlijk verse Noorse vis, gecombineerd met een smaakvolle, frisse salade.",
-      "price": 32.5,
-      "photo": "images/voorbeeld_suggestie.png"
+      "title": "Mosselen",
+      "description": "Geniet van onze verse mosselen, verkrijgbaar in diabolique, witte wijnsaus, room‑looksaus of puur natuur.",
+      "price": 33,
+      "photo": "images/mosselen.png"
     }
   ],
   "dishes": [
