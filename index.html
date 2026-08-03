@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Bistro Likert</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
@@ -31,6 +38,9 @@
     --f-display: 'Fraunces', Georgia, serif;
     --f-body: 'Inter', -apple-system, sans-serif;
     --f-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+    /* hoogte van de sticky nav, gebruikt om andere sticky elementen correct te positioneren */
+    --nav-h: 72px;
   }
 
   html, body { height: 100%; }
@@ -46,6 +56,7 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden; /* voorkomt horizontaal scrollen op smalle schermen */
   }
   /* ── #root is een flex-kolom zodat de footer altijd onderaan blijft ── */
   #root {
@@ -84,7 +95,7 @@
     justify-content:space-between;
     align-items:center;
     padding:0 24px;
-    height:72px;
+    height:var(--nav-h);
 }
 
 .bl-logo{
@@ -97,6 +108,8 @@
     align-items:center;
     gap:8px;
     cursor:pointer;
+    background:none;
+    border:none;
 }
 
 .bl-logo .dot{
@@ -150,10 +163,12 @@
     position:absolute;
     left:0;
     right:0;
-    top:72px;
+    top:var(--nav-h);
     background:rgba(20,11,4,.98);
     padding:18px;
     border-bottom:1px solid var(--line);
+    max-height:calc(100vh - var(--nav-h));
+    overflow-y:auto;
 }
 
 .bl-navlinks.mobile.open{
@@ -177,8 +192,11 @@
 
 @media (max-width:720px){
 
+    :root{
+        --nav-h:92px;
+    }
+
     .bl-nav-in{
-        height:92px;
         padding:0 20px;
     }
 
@@ -195,10 +213,6 @@
         width:60px;
         height:60px;
         font-size:30px;
-    }
-
-    .bl-navlinks.mobile{
-        top:92px;
     }
 
 }
@@ -226,7 +240,10 @@
     padding: 1.5rem;
     backdrop-filter: blur(3px);
   }
-  @media (max-width: 640px) { .bl-panel { padding: 1.1rem; border-radius: 16px; } }
+  @media (max-width: 640px) {
+    .bl-main { padding: 1.5rem 1rem 2.25rem; }
+    .bl-panel { padding: 1.1rem; border-radius: 16px; }
+  }
 
   /* ── Hero ─────────────────────────────────────────────── */
   .bl-hero {
@@ -238,6 +255,9 @@
     backdrop-filter: blur(6px);
     box-shadow: 0 24px 60px rgba(0,0,0,0.35);
     margin-bottom: 1.75rem;
+  }
+  @media (max-width: 560px) {
+    .bl-hero { padding: 1.75rem 1.1rem 1.5rem; border-radius: 18px; }
   }
   .bl-eyebrow {
     font-family: var(--f-mono);
@@ -280,9 +300,13 @@
   .bl-btn-brass:hover { background: var(--brass-light); }
   .bl-btn-ghost { background: transparent; border-color: var(--line-strong); color: var(--tx-on-dark); }
   .bl-btn-ghost:hover { border-color: var(--brass-light); color: var(--brass-light); }
+  @media (max-width: 480px) {
+    .bl-cta-row { flex-direction: column; align-items: stretch; }
+    .bl-cta-row .bl-btn { width: 100%; }
+  }
 
   /* ── Suggesties: retro ticket-stub ───────────────────── */
-  .bl-specials-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .bl-specials-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 
   /* ── Huisgemaakte gin (home) ─────────────────────────── */
   .bl-gin {
@@ -321,6 +345,9 @@
     box-shadow: 0 24px 60px rgba(0,0,0,0.4);
   }
   .bl-ticket.compact { padding: 1.3rem; }
+  @media (max-width: 560px) {
+    .bl-ticket { padding: 1.25rem; border-radius: 14px; }
+  }
   .bl-ticket::before {
     content: '';
     position: absolute; inset: 10px;
@@ -372,6 +399,9 @@
 
   /* ── Menu categories & dot-leader price rows ─────────── */
   .bl-cat { background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 16px; padding: 1.3rem 1.4rem; margin-bottom: 1.1rem; }
+  @media (max-width: 560px) {
+    .bl-cat { padding: 1.05rem 1rem; border-radius: 12px; }
+  }
   .bl-cat-head {
     display: flex; align-items: baseline; gap: 10px;
     border-bottom: 1px solid var(--line-strong);
@@ -385,12 +415,19 @@
   }
   .bl-cat-note { font-size: 12px; color: var(--tx-on-dark-faint); font-style: italic; margin: 0.5rem 0 0.7rem; }
 
-  .bl-item-row { display: flex; align-items: baseline; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .bl-item-row { display: flex; align-items: baseline; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
   .bl-item-row:last-child { border-bottom: none; }
-  .bl-item-name { font-weight: 600; font-size: 15px; color: var(--tx-on-dark); white-space: nowrap; }
+  .bl-item-name { font-weight: 600; font-size: 15px; color: var(--tx-on-dark); }
   .bl-item-leader { flex: 1; border-bottom: 2px dotted var(--line-strong); height: 0; transform: translateY(-5px); min-width: 14px; }
   .bl-item-price { font-family: var(--f-mono); font-weight: 600; font-size: 14.5px; color: var(--brass-light); white-space: nowrap; }
   .bl-item-desc { flex-basis: 100%; font-size: 12.5px; color: var(--tx-on-dark-muted); line-height: 1.6; margin-top: -6px; }
+  @media (max-width: 420px) {
+    /* op erg smalle schermen: naam en prijs op aparte regels ipv naast elkaar met stippellijn */
+    .bl-item-row { gap: 2px; }
+    .bl-item-name { flex-basis: 100%; white-space: normal; }
+    .bl-item-leader { display: none; }
+    .bl-item-price { flex-basis: 100%; }
+  }
 
   /* ── Contact ─────────────────────────────────────────── */
   .bl-grid-2 { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 12px; }
@@ -403,6 +440,8 @@
   }
 
   /* ── Admin ───────────────────────────────────────────── */
+  .bl-admin-layout { display: flex; gap: 1.25rem; align-items: flex-start; }
+  .bl-admin-sidebar { width: 190px; flex-shrink: 0; padding: 10px; }
   .bl-admin-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
   @media (min-width: 760px) { .bl-admin-tabs { flex-direction: column; overflow: visible; } }
   .bl-tab-btn {
@@ -416,21 +455,23 @@
     width: 100%; padding: 10px 12px; border-radius: 8px;
     border: 1px solid var(--line-strong);
     background: rgba(255,255,255,0.06); color: var(--tx-on-dark);
-    font-size: 14px;
+    font-size: 16px; /* 16px voorkomt automatisch inzoomen op iOS bij focus */
   }
   .bl-input::placeholder { color: var(--tx-on-dark-faint); }
   .bl-textarea { resize: vertical; min-height: 76px; }
   .bl-label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--tx-on-dark-faint); display: block; margin-bottom: 6px; }
 
-  .bl-btn-sm { padding: 7px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--line-strong); background: rgba(255,255,255,0.05); color: var(--tx-on-dark); }
+  .bl-btn-sm { padding: 8px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--line-strong); background: rgba(255,255,255,0.05); color: var(--tx-on-dark); min-height: 36px; }
   .bl-btn-sm.brass { background: var(--brass); color: var(--ink); border: none; }
   .bl-btn-sm.danger { background: var(--rust); color: var(--paper-2); border: none; }
 
-  .bl-adminrow { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .bl-adminrow { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; flex-wrap: wrap; }
   .bl-adminrow:last-child { border-bottom: none; }
 
   .bl-export-bar {
-    position: sticky; top: 74px; z-index: 20;
+    position: sticky;
+    top: calc(var(--nav-h) + 2px);
+    z-index: 20;
     display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
     border-radius: 14px;
     padding: 12px 16px;
@@ -442,16 +483,20 @@
   .bl-export-bar button {
     background: var(--paper-2); color: var(--ink); border: none;
     padding: 9px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; flex-shrink: 0;
+    min-height: 40px;
   }
 
   @media (max-width: 720px) {
-    .bl-admin-layout { flex-direction: column !important; }
-    .bl-admin-sidebar { width: 100% !important; }
+    .bl-admin-layout { flex-direction: column; }
+    .bl-admin-sidebar { width: 100%; padding: 8px; }
+    .bl-export-bar { position: static; } /* op gsm neemt de balk anders te veel vaste ruimte in */
   }
 
   /* ── Footer ──────────────────────────────────────────── */
   .bl-footer { background: var(--ink); border-top: 1px solid var(--line); text-align: center; padding: 2.2rem 1.25rem; margin-top: 3rem; flex-shrink: 0; }
 </style>
+</head>
+<body>
 
 <div id="root"></div>
 
@@ -575,11 +620,11 @@
     return h('div', { style: { minHeight: '100vh', display: 'flex', flexDirection: 'column', flex: 1 } },
       h('nav', { className: 'bl-nav' },
         h('div', { className: 'bl-nav-in' },
-          h('span', { className: 'bl-logo', onClick: () => go('home') }, 'Bistro Likert', h('span', { className: 'dot' }, '·')),
+          h('button', { className: 'bl-logo', onClick: () => go('home') }, 'Bistro Likert', h('span', { className: 'dot' }, '·')),
           h('div', { className: 'bl-navlinks desktop' },
             ...navItems.map(([v, l]) => h('button', { key: v, className: 'bl-nb' + (view === v ? ' active' : ''), onClick: () => go(v) }, l))
           ),
-          h('button', { className: 'bl-burger', onClick: () => setMobileOpen((o) => !o), 'aria-label': 'Menu' }, mobileOpen ? '✕' : '☰')
+          h('button', { className: 'bl-burger', onClick: () => setMobileOpen((o) => !o), 'aria-label': 'Menu', 'aria-expanded': mobileOpen }, mobileOpen ? '✕' : '☰')
         ),
         h('div', { className: 'bl-navlinks mobile' + (mobileOpen ? ' open' : '') },
           ...navItems.map(([v, l]) => h('button', { key: v, className: 'bl-nb' + (view === v ? ' active' : ''), onClick: () => go(v) }, l))
@@ -650,7 +695,7 @@
           h('div', { className: 'bl-cat-head' }, h('span', { className: 'bl-cat-title' }, cat.category)),
           cat.note && h('p', { className: 'bl-cat-note' }, cat.note),
           ...cat.items.map((item) =>
-            h('div', { key: item.id, className: 'bl-item-row', style: { flexWrap: 'wrap' } },
+            h('div', { key: item.id, className: 'bl-item-row' },
               h('span', { className: 'bl-item-name' }, item.name),
               h('span', { className: 'bl-item-leader' }),
               h('span', { className: 'bl-item-price' }, eur(item.price)),
@@ -732,8 +777,8 @@
         h('p', null, barText),
         h('button', { onClick: exportData }, '⬇ Back-up downloaden')
       ),
-      h('div', { className: 'bl-admin-layout', style: { display: 'flex', gap: '1.25rem', alignItems: 'flex-start' } },
-        h('div', { className: 'bl-panel bl-admin-sidebar', style: { width: 190, flexShrink: 0, padding: 10 } },
+      h('div', { className: 'bl-admin-layout' },
+        h('div', { className: 'bl-panel bl-admin-sidebar' },
           h('p', { style: { fontSize: 10.5, color: 'var(--tx-on-dark-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '4px 8px 8px', fontFamily: 'var(--f-mono)' } }, 'Beheer'),
           h('div', { className: 'bl-admin-tabs' },
             ...tabs.map(([v, l]) => h('button', { key: v, className: 'bl-tab-btn' + (adv === v ? ' active' : ''), onClick: () => setAdv(v) }, l))
@@ -785,7 +830,7 @@
     const handlePhoto = async (id, e) => { const f = e.target.files[0]; if (f) set(id, 'photo', await toB64(f)); };
 
     return h('div', null,
-      h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.1rem' } },
+      h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.1rem', flexWrap: 'wrap', gap: 8 } },
         h('h2', { style: { fontSize: 16, fontWeight: 600, color: 'var(--tx-on-dark)' } }, 'Suggesties'),
         h('button', { className: 'bl-btn-sm brass', onClick: addSpecial }, '+ Suggestie toevoegen')
       ),
@@ -793,8 +838,8 @@
       ...specials.map((s) =>
         h('div', { key: s.id, className: 'bl-panel', style: { marginBottom: '1rem' } },
           h('div', { style: { display: 'grid', gap: 12 } },
-            h('div', { style: { display: 'flex', gap: 10, alignItems: 'flex-start' } },
-              h('div', { style: { flex: 1 } },
+            h('div', { style: { display: 'flex', gap: 10, alignItems: 'flex-start', flexWrap: 'wrap' } },
+              h('div', { style: { flex: '1 1 200px', minWidth: 0 } },
                 h('label', { className: 'bl-label' }, 'Naam van het gerecht'),
                 h('input', { className: 'bl-input', value: s.title, onChange: (e) => set(s.id, 'title', e.target.value), placeholder: 'Bijv. Gegrilde zalm met kruidenboter' })
               ),
@@ -882,8 +927,8 @@
               ),
               h('span', { style: { fontFamily: 'var(--f-mono)', color: 'var(--brass-light)', fontWeight: 600, fontSize: 13 } }, eur(item.price)),
               h('div', { style: { display: 'flex', gap: 4 } },
-                h('button', { className: 'bl-btn-sm', style: { padding: '4px 8px' }, onClick: () => startEdit(cat.id, item) }, '✏️'),
-                h('button', { className: 'bl-btn-sm danger', style: { padding: '4px 8px' }, onClick: () => delItem(cat.id, item.id) }, '🗑')
+                h('button', { className: 'bl-btn-sm', style: { padding: '6px 10px' }, onClick: () => startEdit(cat.id, item) }, '✏️'),
+                h('button', { className: 'bl-btn-sm danger', style: { padding: '6px 10px' }, onClick: () => delItem(cat.id, item.id) }, '🗑')
               )
             );
           }),
@@ -899,3 +944,5 @@
 
   ReactDOM.render(h(App), document.getElementById('root'));
 </script>
+</body>
+</html>
